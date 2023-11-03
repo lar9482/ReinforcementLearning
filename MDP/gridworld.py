@@ -56,7 +56,7 @@ def _clip(p, max_x, max_y):
     return p
 
 
-_OBS_KEYS = ['pit']
+_OBS_KEYS = ['pit', 'goal']
 _OBS_REWARDS = {
     'pit': -10.0,
     'goal': 10.0
