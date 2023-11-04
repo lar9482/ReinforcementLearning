@@ -2,7 +2,6 @@
 
 from enum import Enum
 from MDP.mdp import FiniteStateMDP, MDPState
-from MDP.wumpus import WumpusState
 import itertools
 import numpy as np
 
@@ -69,7 +68,7 @@ class DiscreteGridWorldMDP(FiniteStateMDP):
         self._h = h
         self.move_cost = move_cost
         self._obs = {k:{} for k in _OBS_KEYS}
-
+    
     @property
     def width(self):
         return self._w
@@ -84,8 +83,10 @@ class DiscreteGridWorldMDP(FiniteStateMDP):
 
     @property
     def states(self):
-        return itertools.product(
-            range(self.width), range(self.height), (True, False), (True, False))
+        return [
+            GridState(*x, self.width, self.height) 
+            for x in itertools.product(range(self.width), range(self.height))
+        ]
 
     @property
     def actions(self):
@@ -93,7 +94,7 @@ class DiscreteGridWorldMDP(FiniteStateMDP):
 
     @property
     def initial_state(self):
-        return WumpusState(0, 0, False, False, self.width, self.height)
+        return GridState(0, 0, self.width, self.height)
 
     def actions_at(self, state):
         a = [Actions.LEFT, Actions.RIGHT, Actions.UP, Actions.DOWN]
