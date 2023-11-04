@@ -1,9 +1,11 @@
-from MDP.wumpus_sample import wumpusSample
-from MDP.gridworld_sample import gridworldSample
-
+from WorldKnown.domains.navigationProblem import getNavigationProblem
+from WorldKnown.domains.wumpusWorld import getWumpusWorld
 def main():
-    wumpusSample()
-    gridworldSample()
+    gridWorld = getNavigationProblem()
+    gridWorld.display()
+
+    wumpusWorld = getWumpusWorld()
+    wumpusWorld.display()
 
 if __name__ == '__main__':
     main()
