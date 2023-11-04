@@ -1,6 +1,7 @@
 from MDP.hashStates import hashState
 
-"""
+def QValue(mdp, discount, currState, currAction, U):
+    """
     Calculates the Q value given the current state and action
     @param mdp: MDP
         The MDP simulator
@@ -22,7 +23,7 @@ from MDP.hashStates import hashState
     @returns float:
         The QValue itself
 """
-def QValue(mdp, discount, currState, currAction, U):
+
     nextStateAndProbs = {
         nextState: transProb 
         for nextState, transProb in mdp.p(currState, currAction)
