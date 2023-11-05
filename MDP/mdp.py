@@ -9,7 +9,6 @@
 
 import numpy as np
 
-
 class MDPState:
     """A single state within the MDP."""
     @property
