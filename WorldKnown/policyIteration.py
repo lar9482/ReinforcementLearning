@@ -5,7 +5,7 @@ from MDP.hashStates import hashState
 
 def policyIteration(mdp, discount, k):
     U = {hashState(state): 0 for state in list(mdp.states)}
-    policy ={
+    policy = {
         hashState(state): random.choice(mdp.actions_at(state))
         for state in list(mdp.states)
     }
@@ -13,7 +13,7 @@ def policyIteration(mdp, discount, k):
     while True:
         policyEvaluation(U, policy, mdp, discount, k)
         unchanged = True
-
+        
         for currState in list(mdp.states):
             argMaxAction = argmaxQValue(mdp, discount, currState, U)
             QValueArgMaxAction = QValue(mdp, discount, currState, argMaxAction, U)
@@ -25,6 +25,7 @@ def policyIteration(mdp, discount, k):
         
         if (unchanged):
             break
+
     return policy
 
 def policyEvaluation(U, policy, mdp, discount, k):
