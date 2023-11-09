@@ -32,14 +32,18 @@ def testUnknownWorlds():
     
     maxExpectedReward = 1
     maxNumTries = 5
+    discount = 0.1
+
     typeAgent = agentType.QLearn
-    agent = tableQAgent(world1, typeAgent, maxExpectedReward, maxNumTries)
+    agent = tableQAgent(world1, typeAgent, discount, maxExpectedReward, maxNumTries)
 
     state = world1.initial_state
     action = world1.actions.UP
     while (not world1.is_terminal(state)):
         state, r = world1.act(state, action)
         action = agent.learn(state, r)
+    
+    print()
 
 
 def main():
