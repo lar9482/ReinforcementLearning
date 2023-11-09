@@ -1,6 +1,6 @@
 from MDP.gridworld import GridState
 from MDP.wumpus import WumpusState
-
+import numpy as np
 """
     This method will hash 'state' by hand, in order to prevent any
     unhashable situations with the state of the MDP.
@@ -22,5 +22,6 @@ def hashState(state):
         return (state.x, state.y)
     if isinstance(state, WumpusState):
         return (state.x, state.y, state.has_gold, state.has_immunity)
-    
+    if isinstance(state, np.ndarray) and state.shape == (2,):
+        return (state[0], state[1])
     raise ValueError("Unable to hash the state")
