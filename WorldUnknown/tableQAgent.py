@@ -37,8 +37,8 @@ class tableQAgent:
 
         for actionPrime in possibleActions:
             exploreValuePrime = self.explore(
-                self.lookUpQTable(self.prevState, actionPrime),
-                self.lookUpNTable(self.prevState, actionPrime)
+                self.lookUpQTable(currState, actionPrime),
+                self.lookUpNTable(currState, actionPrime)
             )
             if (exploreValuePrime > maxExploreValue):
                 maxExploreValue = exploreValuePrime
