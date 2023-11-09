@@ -8,7 +8,7 @@ class agentType(Enum):
     SASRA = 1
 
 class tableQAgent:
-    def __init__(self, mdpSimulator, agentType, maxExpectedReward, maxNumTries):
+    def __init__(self, mdpSimulator, agentType, discount, maxExpectedReward, maxNumTries):
         self.mdpSimulator = mdpSimulator
         self.agentType = agentType
         self.N = {}
@@ -17,17 +17,45 @@ class tableQAgent:
         self.prevState = None
         self.prevAction = None
 
+        self.discount = discount
         self.maxExpectedReward = maxExpectedReward
         self.maxNumTries = maxNumTries
 
     def learn(self, currState, currReward):
-        if (self.prevState != None):
-            pass
+        if (self.prevState is not None):
+            self.incrementNTable()
+
+            self.Q[(
+                hashState(self.prevState),
+                self.prevAction
+            )] += (
+                self.QLearn(currState, currReward) if self.agentType == agentType.QLearn else
+                self.SARSA(currState, currReward)
+            )
 
         self.prevState = currState
         self.prevAction = self.argMaxExplore(currState)
 
         return self.prevAction
+
+    def QLearn(self, state, reward):
+        alpha = self.learningRate(
+            self.lookUpNTable(self.prevState, self.prevAction)
+        )
+        
+        maxDiscountedQValue = -sys.maxsize
+        for actionPrime in self.mdpSimulator.actions_at(state):
+            currDiscountedQValue = self.lookUpQTable(state, actionPrime)
+            maxDiscountedQValue = max(maxDiscountedQValue, currDiscountedQValue)
+        
+        return alpha * (
+            reward + 
+            self.discount * maxDiscountedQValue +
+            self.lookUpQTable(self.prevState, self.prevAction)
+        )
+
+    def SARSA(self, state, reward):
+        pass
 
     def argMaxExplore(self, currState):
         possibleActions = self.mdpSimulator.actions_at(currState)
@@ -53,7 +81,7 @@ class tableQAgent:
     
     def incrementNTable(self):
         hashedPrevState = hashState(self.prevState)
-        self.N[(hashedPrevState, hashedPrevState)] += 1
+        self.N[(hashedPrevState, self.prevAction)] += 1
 
     def lookUpNTable(self, state, action):
         hashedState = hashState(state)
