@@ -2,7 +2,6 @@ from enum import Enum
 from MDP.hashStates import hashState
 
 import sys
-import copy
 
 class agentType(Enum):
     QLearn = 0
@@ -54,7 +53,7 @@ class tableQAgent:
     
     def incrementNTable(self):
         hashedPrevState = hashState(self.prevState)
-        self.N[(hashedPrevState, copy.deepcopy(self.prevAction))] += 1
+        self.N[(hashedPrevState, hashedPrevState)] += 1
 
     def lookUpNTable(self, state, action):
         hashedState = hashState(state)
