@@ -2,6 +2,8 @@ from enum import Enum
 from MDP.hashStates import hashState
 
 import sys
+import copy
+import random
 
 class agentType(Enum):
     QLearn = 0
@@ -33,10 +35,10 @@ class tableQAgent:
                 self.SARSA(currState, currReward)
             )
 
-        self.prevState = currState
+        self.prevState = copy.deepcopy(currState)
         self.prevAction = self.argMaxExplore(currState)
 
-        return self.prevAction
+        return copy.deepcopy(self.prevAction)
 
     def QLearn(self, state, reward):
         alpha = self.learningRate(
@@ -55,11 +57,13 @@ class tableQAgent:
         )
 
     def SARSA(self, state, reward):
-        pass
-
+        alpha = self.learningRate(
+            self.lookUpNTable(self.prevState, self.prevAction)
+        )
+        
     def argMaxExplore(self, currState):
         possibleActions = self.mdpSimulator.actions_at(currState)
-        argmaxAction = None
+        argmaxActions = []
         maxExploreValue = -sys.maxsize
 
         for actionPrime in possibleActions:
@@ -69,9 +73,11 @@ class tableQAgent:
             )
             if (exploreValuePrime > maxExploreValue):
                 maxExploreValue = exploreValuePrime
-                argmaxAction = actionPrime
+                argmaxActions = [actionPrime]
+            elif (exploreValuePrime == maxExploreValue):
+                argmaxActions.append(actionPrime)
 
-        return argmaxAction
+        return random.choice(argmaxActions)
     
     def explore(self, U, N):
         if (N < self.maxNumTries):
