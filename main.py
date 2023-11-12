@@ -27,28 +27,48 @@ def testKnownWorlds():
     Wpolicy = policyIteration(wumpusWorld, discount, k)
     print()
 
-def testUnknownWorlds():
-    world1 = getWorld1Discrete()
-    world2 = getWorld2Continuous()
-    world3 = getWorld3Continuous()
+def testUnknownWorldsQLearn():
+    world = getWorld1Discrete()
     
     maxExpectedReward = 1
     maxNumTries = 10
     discount = 0.1
 
     typeAgent = agentType.QLearn
-    agent = tableQAgent(world1, typeAgent, discount, maxExpectedReward, maxNumTries)
+    agent = tableQAgent(world, typeAgent, discount, maxExpectedReward, maxNumTries)
 
-    state = world1.initial_state
-    action = random.choice(list(world1.actions))
+    state = world.initial_state
+    action = random.choice(list(world.actions))
     for i in range(0, 1000):
-        state, r = world1.act(state, action)
+        state, r = world.act(state, action)
         action = agent.learn(state, r)
 
         value = sum(agent.Q.values()) / len(agent.Q)
-        
         print(value)
-        # print(action)
+    
+    bestState = max(agent.Q, key=agent.Q.get)
+    bestValue = agent.Q[bestState]
+    print()
+
+def testUnknownWorldsSARSA():
+    world = getWorld2Discrete()
+    
+    maxExpectedReward = 1
+    maxNumTries = 10
+    discount = 0.1
+    epsilon = 0.5
+
+    typeAgent = agentType.SASRA
+    agent = tableQAgent(world, typeAgent, discount, maxExpectedReward, maxNumTries, epsilon)
+    state = world.initial_state
+    action = random.choice(list(world.actions))
+
+    for i in range(0, 5000):
+        state, r = world.act(state, action)
+        action = agent.learn(state, r)
+
+        value = sum(agent.Q.values()) / len(agent.Q)
+        print(value)
     
     bestState = max(agent.Q, key=agent.Q.get)
     bestValue = agent.Q[bestState]
@@ -56,7 +76,8 @@ def testUnknownWorlds():
 
 def main():
     # testKnownWorlds()
-    testUnknownWorlds()
-
+    # testUnknownWorldsQLearn()
+    testUnknownWorldsSARSA()
+    
 if __name__ == '__main__':
     main()
