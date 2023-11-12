@@ -6,7 +6,7 @@ from WorldKnown.policyIteration import policyIteration
 from WorldUnknown.domains.world1 import getWorld1Continuous, getWorld1Discrete
 from WorldUnknown.domains.world2 import getWorld2Continuous, getWorld2Discrete
 from WorldUnknown.domains.world3 import getWorld3Continuous, getWorld3Discrete
-from WorldUnknown.tableQAgent import tableQAgent, agentType
+from WorldUnknown.tableQAgent import tableQAgent, learnType
 
 from MDP.hashStates import hashState
 
@@ -34,7 +34,7 @@ def testUnknownWorldsQLearn():
     maxNumTries = 10
     discount = 0.1
 
-    typeAgent = agentType.QLearn
+    typeAgent = learnType.QLearn
     agent = tableQAgent(world, typeAgent, discount, maxExpectedReward, maxNumTries)
 
     state = world.initial_state
@@ -58,7 +58,7 @@ def testUnknownWorldsSARSA():
     discount = 0.1
     epsilon = 0.5
 
-    typeAgent = agentType.SASRA
+    typeAgent = learnType.SASRA
     agent = tableQAgent(world, typeAgent, discount, maxExpectedReward, maxNumTries, epsilon)
     state = world.initial_state
     action = random.choice(list(world.actions))
