@@ -28,7 +28,7 @@ def testKnownWorlds():
     print()
 
 def testUnknownWorldsQLearn():
-    world = getWorld1Discrete()
+    world = getWorld3Discrete()
     
     maxExpectedReward = 1
     maxNumTries = 10
@@ -43,7 +43,7 @@ def testUnknownWorldsQLearn():
         state, r = world.act(state, action)
         action = agent.learn(state, r)
 
-        value = sum(agent.Q.values()) / len(agent.Q)
+        value = agent.Q[max(agent.Q, key=agent.Q.get)]
         print(value)
     
     bestState = max(agent.Q, key=agent.Q.get)
@@ -51,7 +51,7 @@ def testUnknownWorldsQLearn():
     print()
 
 def testUnknownWorldsSARSA():
-    world = getWorld2Discrete()
+    world = getWorld1Discrete()
     
     maxExpectedReward = 1
     maxNumTries = 10
@@ -67,7 +67,7 @@ def testUnknownWorldsSARSA():
         state, r = world.act(state, action)
         action = agent.learn(state, r)
 
-        value = sum(agent.Q.values()) / len(agent.Q)
+        value = agent.Q[max(agent.Q, key=agent.Q.get)]
         print(value)
     
     bestState = max(agent.Q, key=agent.Q.get)
@@ -76,8 +76,8 @@ def testUnknownWorldsSARSA():
 
 def main():
     # testKnownWorlds()
-    # testUnknownWorldsQLearn()
-    testUnknownWorldsSARSA()
+    testUnknownWorldsQLearn()
+    # testUnknownWorldsSARSA()
     
 if __name__ == '__main__':
     main()
