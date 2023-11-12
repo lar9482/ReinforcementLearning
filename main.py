@@ -51,7 +51,7 @@ def testUnknownWorldsQLearn():
     print()
 
 def testUnknownWorldsSARSA():
-    world = getWorld1Discrete()
+    world = getWorld2Discrete()
     
     maxExpectedReward = 1
     maxNumTries = 10
