@@ -10,7 +10,7 @@ class agentType(Enum):
     SASRA = 1
 
 class tableQAgent:
-    def __init__(self, mdpSimulator, agentType, discount, maxExpectedReward, maxNumTries):
+    def __init__(self, mdpSimulator, agentType, discount, maxExpectedReward, maxNumTries, epsilon = 0.5):
         self.mdpSimulator = mdpSimulator
         self.agentType = agentType
         self.N = {}
@@ -22,6 +22,7 @@ class tableQAgent:
         self.discount = discount
         self.maxExpectedReward = maxExpectedReward
         self.maxNumTries = maxNumTries
+        self.epsilon = epsilon
 
     def learn(self, currState, currReward):
         if (self.prevState is not None):
@@ -60,7 +61,33 @@ class tableQAgent:
         alpha = self.learningRate(
             self.lookUpNTable(self.prevState, self.prevAction)
         )
+
+        actionPrime = (
+            self.argMaxExploit(state) if random.uniform(0, 1) < self.epsilon else
+            self.argMaxExplore(state)
+        )
         
+        return alpha * (
+            reward + 
+            (self.discount * self.lookUpQTable(state, actionPrime)) +
+            self.lookUpQTable(self.prevState, self.prevAction)
+        )
+
+    def argMaxExploit(self, currState):
+        possibleActions = self.mdpSimulator.actions_at(currState)
+        argmaxActions = []
+        maxQValue = -sys.maxsize
+        for actionPrime in possibleActions:
+
+            QValuePrime = self.lookUpQTable(currState, actionPrime)
+            if (QValuePrime > maxQValue):
+                maxQValue = QValuePrime
+                argmaxActions = [actionPrime]
+            elif (QValuePrime == maxQValue):
+                argmaxActions.append(actionPrime)
+        
+        return random.choice(argmaxActions)
+    
     def argMaxExplore(self, currState):
         possibleActions = self.mdpSimulator.actions_at(currState)
         argmaxActions = []
