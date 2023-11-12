@@ -1,3 +1,9 @@
+from enum import Enum
+
+class learnType(Enum):
+    QLearn = 0
+    SASRA = 1
+
 class QAgent:
     def learn(self, currState, currReward):
         """

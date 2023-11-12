@@ -1,18 +1,22 @@
-from enum import Enum
 from MDP.hashStates import hashState
-from WorldUnknown.QAgent import QAgent
+from WorldUnknown.QAgent import QAgent, learnType
+
 import sys
 import copy
 import random
 
-class agentType(Enum):
-    QLearn = 0
-    SASRA = 1
-
 class tableQAgent(QAgent):
-    def __init__(self, mdpSimulator, agentType, discount = 0.1, maxExpectedReward = 1, maxNumTries = 10, epsilon = 0.5):
+    def __init__(
+        self, 
+        mdpSimulator, 
+        learnType, 
+        discount = 0.1, 
+        maxExpectedReward = 1, 
+        maxNumTries = 10, 
+        epsilon = 0.5
+    ):
         self.mdpSimulator = mdpSimulator
-        self.agentType = agentType
+        self.agentType = learnType
         self.N = {}
         self.Q = {}
 
@@ -32,7 +36,7 @@ class tableQAgent(QAgent):
                 hashState(self.prevState),
                 self.prevAction
             )] += (
-                self.QLearn(currState, currReward) if self.agentType == agentType.QLearn else
+                self.QLearn(currState, currReward) if self.agentType == learnType.QLearn else
                 self.SARSA(currState, currReward)
             )
 
