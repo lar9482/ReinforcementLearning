@@ -10,7 +10,7 @@ class agentType(Enum):
     SASRA = 1
 
 class tableQAgent:
-    def __init__(self, mdpSimulator, agentType, discount, maxExpectedReward, maxNumTries, epsilon = 0.5):
+    def __init__(self, mdpSimulator, agentType, discount = 0.1, maxExpectedReward = 1, maxNumTries = 10, epsilon = 0.5):
         self.mdpSimulator = mdpSimulator
         self.agentType = agentType
         self.N = {}
@@ -53,7 +53,7 @@ class tableQAgent:
         
         return alpha * (
             reward + 
-            self.discount * maxDiscountedQValue +
+            (self.discount * maxDiscountedQValue) -
             self.lookUpQTable(self.prevState, self.prevAction)
         )
 
@@ -61,7 +61,7 @@ class tableQAgent:
         alpha = self.learningRate(
             self.lookUpNTable(self.prevState, self.prevAction)
         )
-
+        
         actionPrime = (
             self.argMaxExploit(state) if random.uniform(0, 1) < self.epsilon else
             self.argMaxExplore(state)
@@ -69,7 +69,7 @@ class tableQAgent:
         
         return alpha * (
             reward + 
-            (self.discount * self.lookUpQTable(state, actionPrime)) +
+            (self.discount * self.lookUpQTable(state, actionPrime)) -
             self.lookUpQTable(self.prevState, self.prevAction)
         )
 
