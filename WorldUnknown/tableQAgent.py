@@ -16,7 +16,7 @@ class tableQAgent(QAgent):
         epsilon = 0.5
     ):
         self.mdpSimulator = mdpSimulator
-        self.agentType = learnType
+        self.learnType = learnType
         self.N = {}
         self.Q = {}
 
@@ -36,7 +36,7 @@ class tableQAgent(QAgent):
                 hashState(self.prevState),
                 self.prevAction
             )] += (
-                self.QLearn(currState, currReward) if self.agentType == learnType.QLearn else
+                self.QLearn(currState, currReward) if self.learnType == learnType.QLearn else
                 self.SARSA(currState, currReward)
             )
 
