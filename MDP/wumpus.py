@@ -152,7 +152,7 @@ class WumpusMDP(FiniteStateMDP):
         return tuple(pos) in self._obj[kind]
 
     def move(self, state, action):
-        probs = [0.7, 0.15, 0.15]
+        probs = [0.8, 0.1, 0.1]
 
         if action == Actions.UP:
             alst = [_UP, _LEFT, _RIGHT]
