@@ -20,7 +20,6 @@ class functionQAgent(QAgent):
         self.learnType = learnType
 
         self.N = {}
-        self.radius = radius
         self.prevState = None
         self.prevAction = None
 
@@ -28,6 +27,7 @@ class functionQAgent(QAgent):
         self.maxExpectedReward = maxExpectedReward
         self.maxNumTries = maxNumTries
         self.epsilon = epsilon
+        self.radius = radius
     
     def learn(self, currState, currReward):
         pass

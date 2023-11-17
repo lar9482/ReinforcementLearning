@@ -98,9 +98,11 @@ class tableQAgent(QAgent):
         maxExploreValue = -sys.maxsize
 
         for actionPrime in possibleActions:
-            exploreValuePrime = self.__explore(
+            exploreValuePrime = self.explore(
                 self.__lookUpQTable(currState, actionPrime),
-                self.__lookUpNTable(currState, actionPrime)
+                self.__lookUpNTable(currState, actionPrime),
+                self.maxNumTries, 
+                self.maxExpectedReward
             )
             if (exploreValuePrime > maxExploreValue):
                 maxExploreValue = exploreValuePrime
@@ -109,12 +111,6 @@ class tableQAgent(QAgent):
                 argmaxActions.append(actionPrime)
 
         return random.choice(argmaxActions)
-    
-    def __explore(self, U, N):
-        if (N < self.maxNumTries):
-            return self.maxExpectedReward
-        else:
-            return U
     
     def __incrementNTable(self):
         hashedPrevState = hashState(self.prevState)

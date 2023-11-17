@@ -1,7 +1,8 @@
 from WorldUnknown.domains.world1 import getWorld1Discrete
 from WorldUnknown.domains.world2 import getWorld2Discrete
 from WorldUnknown.domains.world3 import getWorld3Discrete
-from WorldUnknown.tableQAgent import tableQAgent, learnType
+from WorldUnknown.QAgent import learnType
+from WorldUnknown.tableQAgent import tableQAgent
 
 from MDP.hashStates import hashState
 
