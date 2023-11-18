@@ -36,7 +36,7 @@ class functionQAgent(QAgent):
     
     def learn(self, currState, currReward):
         if (self.prevState is not None):
-            pass
+            self.__incrementNTable(self.prevState, self.prevAction)
 
         self.prevState = copy.deepcopy(currState)
         self.prevAction = self.__argMaxExplore(currState)
@@ -83,22 +83,30 @@ class functionQAgent(QAgent):
             (self.theta3 * Y)
         )
     
+    def __incrementNTable(self):
+        discretePrevState = self.__getApproximateDiscreteState(self.prevState)
+
+        if (self.N.get((discretePrevState, self.prevAction)) == None):
+            self.N[(discretePrevState, self.prevAction)] = 1
+        else:
+            self.N[(discretePrevState, self.prevAction)] += 1
+
     def __lookUpNTable(self, state, action):
-        nextState, _ = self.mdpSimulator.act(state, action)
-        hashedNextState = hashState(nextState)
-        discreteNextState = self.__getDiscreteState(hashedNextState[0], hashedNextState[1])
+        discreteState = self.__getApproximateDiscreteState(state)
 
-        if (self.N.get((discreteNextState, action)) == None):
-            self.N[(discreteNextState, action)] = 0
+        if (self.N.get((discreteState, action)) == None):
+            self.N[(discreteState, action)] = 0
 
-        return self.N[(discreteNextState, action)]
+        return self.N[(discreteState, action)]
 
-    def __getDiscreteState(self, X, Y):
+    def __getApproximateDiscreteState(self, currState):
+        hashedState = hashState(currState)
+
+        X = hashedState[0]
+        Y = hashedState[1]
         integerBaseX = int(X)
         integerBaseY = int(Y)
         roundX = math.ceil(X) if ((X - integerBaseX) >= 0.5) else math.floor(X)
         roundY = math.ceil(Y) if ((Y - integerBaseY) >= 0.5) else math.floor(Y)
 
         return (roundX, roundY)
-        
-        
