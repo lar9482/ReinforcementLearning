@@ -5,6 +5,7 @@ import sys
 import copy
 import random
 import math
+import numpy as np
 
 class functionQAgent(QAgent):
     def __init__(
@@ -36,7 +37,12 @@ class functionQAgent(QAgent):
     
     def learn(self, currState, currReward):
         if (self.prevState is not None):
-            self.__incrementNTable(self.prevState, self.prevAction)
+            self.__incrementNTable()
+            
+            if (self.learnType == learnType.QLearn):
+                self.QLearn(currState, currReward) 
+            else:
+                self.SARSA(currState, currReward)
 
         self.prevState = copy.deepcopy(currState)
         self.prevAction = self.__argMaxExplore(currState)
@@ -44,7 +50,28 @@ class functionQAgent(QAgent):
         return copy.deepcopy(self.prevAction)
 
     def QLearn(self, state, reward):
-        pass
+        alpha = self.learningRate(
+            self.__lookUpNTable(self.prevState, self.prevAction)
+        )
+
+        maxDiscountedQValue = -sys.maxsize
+        for actionPrime in self.mdpSimulator.actions_at(state):
+            currDiscountedQValue = self.calculateQValue(state, actionPrime)
+            maxDiscountedQValue = max(maxDiscountedQValue, currDiscountedQValue)
+        
+        sample = alpha * np.clip((
+            reward + 
+            (self.discount * maxDiscountedQValue) -
+            (self.calculateQValue(self.prevState, self.prevAction))
+        ), -1, 1)
+        
+        hashedPrevState = hashState(self.prevState)
+        prevStateX = hashedPrevState[0]
+        prevStateY = hashedPrevState[1]
+
+        self.theta1 = np.clip(self.theta1 + sample, -10, 10)
+        self.theta2 = np.clip(self.theta2 + (sample * prevStateX), -10, 10)
+        self.theta3 = np.clip(self.theta3 + (sample * prevStateY), -10, 10)
 
     def SARSA(self, state, reward):
         pass
@@ -79,34 +106,92 @@ class functionQAgent(QAgent):
 
         return (
             self.theta1 +
-            (self.theta2 * X) +
-            (self.theta3 * Y)
+            (self.theta2 * (X)) +
+            (self.theta3 * (Y))
         )
     
     def __incrementNTable(self):
-        discretePrevState = self.__getApproximateDiscreteState(self.prevState)
+        (closestXY, seenActions) = self.__getClosestLocationWithActions(self.prevState)
 
-        if (self.N.get((discretePrevState, self.prevAction)) == None):
-            self.N[(discretePrevState, self.prevAction)] = 1
+        # Case where no close location has been seen yet.
+        if (closestXY == None):
+            hashedPrevState = hashState(self.prevState)
+            NTableEntry_PrevState = (
+                (hashedPrevState[0], hashedPrevState[1]), 
+                self.prevAction
+            )
+
+            self.N[NTableEntry_PrevState] = 1
+            return self.N[NTableEntry_PrevState]
+        
+        # Case where no association between the previous action and the closest location 
+        # has been associated yet.
+        if (not self.prevAction in seenActions):
+            self.N[(
+                closestXY,
+                self.prevAction
+            )] = 1
+            
         else:
-            self.N[(discretePrevState, self.prevAction)] += 1
+            self.N[(
+                closestXY,
+                self.prevAction
+            )] += 1
+
+        return self.N[(
+            closestXY,
+            self.prevAction
+        )]
 
     def __lookUpNTable(self, state, action):
-        discreteState = self.__getApproximateDiscreteState(state)
+        (closestXY, seenActions) = self.__getClosestLocationWithActions(state)
 
-        if (self.N.get((discreteState, action)) == None):
-            self.N[(discreteState, action)] = 0
+        # Case where no close location has been seen yet.
+        if (closestXY == None):
+            hashedCurrState = hashState(state)
+            NTableEntry_CurrState = (
+                (hashedCurrState[0], hashedCurrState[1]), 
+                action
+            )
 
-        return self.N[(discreteState, action)]
+            self.N[NTableEntry_CurrState] = 0
+            return self.N[NTableEntry_CurrState]
+        
+        # Case where no association between the current action and the closest location 
+        # has been associated yet.
+        if (not action in seenActions):
+            self.N[(
+                closestXY,
+                action
+            )] = 0
 
-    def __getApproximateDiscreteState(self, currState):
-        hashedState = hashState(currState)
+        return self.N[(
+            closestXY,
+            action
+        )]
+
+    def __getClosestLocationWithActions(self, state):
+        hashedState = hashState(state)
 
         X = hashedState[0]
         Y = hashedState[1]
-        integerBaseX = int(X)
-        integerBaseY = int(Y)
-        roundX = math.ceil(X) if ((X - integerBaseX) >= 0.5) else math.floor(X)
-        roundY = math.ceil(Y) if ((Y - integerBaseY) >= 0.5) else math.floor(Y)
 
-        return (roundX, roundY)
+        shortestDist = sys.maxsize
+        closestXY = None
+        seenActions = []
+        
+        for seenState in self.N:
+            seenStateX = seenState[0][0]
+            seenStateY = seenState[0][1]
+
+            dist = ((seenStateX - X) ** 2) + ((seenStateY - Y) ** 2)
+            if (dist < self.radius):
+                if (dist < shortestDist):
+                    closestXY = (seenStateX, seenStateY)
+                    shortestDist = dist
+                    seenActions = [seenState[1]]
+
+                elif (dist == shortestDist):
+                    seenActions.append(seenState[1])
+        
+        return (closestXY, seenActions)
