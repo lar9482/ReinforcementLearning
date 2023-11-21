@@ -31,9 +31,9 @@ class functionQAgent(QAgent):
         self.epsilon = epsilon
         self.radius = radius
 
-        self.theta1 = random.uniform(0, 1)
-        self.theta2 = random.uniform(0, 1)
-        self.theta3 = random.uniform(0, 1)
+        self.theta1 = random.uniform(-1, 1)
+        self.theta2 = random.uniform(-1, 1)
+        self.theta3 = random.uniform(-1, 1)
     
     def learn(self, currState, currReward):
         if (self.prevState is not None):
@@ -63,18 +63,54 @@ class functionQAgent(QAgent):
             reward + 
             (self.discount * maxDiscountedQValue) -
             (self.calculateQValue(self.prevState, self.prevAction))
-        ), -1, 1)
+        ), -self.maxExpectedReward, self.maxExpectedReward)
         
         hashedPrevState = hashState(self.prevState)
         prevStateX = hashedPrevState[0]
         prevStateY = hashedPrevState[1]
 
-        self.theta1 = np.clip(self.theta1 + sample, -10, 10)
-        self.theta2 = np.clip(self.theta2 + (sample * prevStateX), -10, 10)
-        self.theta3 = np.clip(self.theta3 + (sample * prevStateY), -10, 10)
+        self.theta1 = np.clip(self.theta1 + sample, -self.maxExpectedReward, self.maxExpectedReward)
+        self.theta2 = np.clip(self.theta2 + (sample * prevStateX), -self.maxExpectedReward, self.maxExpectedReward)
+        self.theta3 = np.clip(self.theta3 + (sample * prevStateY), -self.maxExpectedReward, self.maxExpectedReward)
 
     def SARSA(self, state, reward):
-        pass
+        alpha = self.learningRate(
+            self.__lookUpNTable(self.prevState, self.prevAction)
+        )
+
+        actionPrime = (
+            self.__argMaxExploit(state) if random.uniform(0, 1) < self.epsilon else
+            self.__argMaxExplore(state)
+        )
+
+        sample = alpha * np.clip((
+            reward + 
+            (self.discount * self.calculateQValue(state, actionPrime)) -
+            (self.calculateQValue(self.prevState, self.prevAction))
+        ), -1, 1)
+
+        hashedPrevState = hashState(self.prevState)
+        prevStateX = hashedPrevState[0]
+        prevStateY = hashedPrevState[1]
+
+        self.theta1 = np.clip(self.theta1 + sample, -1, 1)
+        self.theta2 = np.clip(self.theta2 + (sample * prevStateX), -1, 1)
+        self.theta3 = np.clip(self.theta3 + (sample * prevStateY), -1, 1)
+    
+    def __argMaxExploit(self, currState):
+        possibleActions = self.mdpSimulator.actions_at(currState)
+        argmaxActions = []
+        maxQValue = -sys.maxsize
+        for actionPrime in possibleActions:
+
+            QValuePrime = self.calculateQValue(currState, actionPrime)
+            if (QValuePrime > maxQValue):
+                maxQValue = QValuePrime
+                argmaxActions = [actionPrime]
+            elif (QValuePrime == maxQValue):
+                argmaxActions.append(actionPrime)
+        
+        return random.choice(argmaxActions)
 
     def __argMaxExplore(self, currState):
         possibleActions = self.mdpSimulator.actions_at(currState)
