@@ -104,7 +104,7 @@ class DiscreteGridWorldMDP(FiniteStateMDP):
         if action in [Actions.UP, Actions.DOWN, Actions.LEFT, Actions.RIGHT]:
             return self.move(state, action)
         else:
-            raise Exception("Invalid action specified: {}".format(action))
+             raise Exception("Invalid action specified: {}".format(action))
 
     def r(self, s1, s2):
         ## if it's the pit, return the default pit bad reward
