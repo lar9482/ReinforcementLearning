@@ -8,7 +8,7 @@
             "name": "Python: Main.py",
             "type": "python",
             "request": "launch",
-            "program": "${workspaceFolder}/heatmap.py",
+            "program": "${workspaceFolder}/main.py",
             "console": "integratedTerminal",
             "justMyCode": true,
             "env": {

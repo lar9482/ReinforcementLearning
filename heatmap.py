@@ -64,5 +64,11 @@ def createHeatMap(M, N, values):
 
 M, N = 5, 4  # e.g. 5 columns, 4 rows
 values = create_demo_data(M, N)
-print(type(values[0]))
+print(values[0])
+print('########################')
+print(values[1])
+print('########################')
+print(values[2])
+print('########################')
+print(values[3])
 createHeatMap(M, N, values)
