@@ -34,7 +34,7 @@ def triangulation_for_triheatmap(M, N):
                   for j in range(N) for i in range(M)]
     return [Triangulation(x, y, triangles) for triangles in [trianglesN, trianglesE, trianglesS, trianglesW]]
 
-def createHeatMap(M, N, values):
+def createHeatMap(M, N, values, filePath):
 
     triangul = triangulation_for_triheatmap(M, N)
     fig, ax = plt.subplots()
@@ -51,7 +51,7 @@ def createHeatMap(M, N, values):
                 else:
                     v = val[j, i]
                 
-                ax.text(i + 0.3 * dir[1], j + 0.3 * dir[0], f'{v:.2f}', color='k' if 0.2 < v < 0.8 else 'w', ha='center', va='center')
+                # ax.text(i + 0.3 * dir[1], j + 0.3 * dir[0], f'{v:.1f}', color='k' if 0.2 < v < 0.8 else 'w', ha='center', va='center')
     cbar = fig.colorbar(imgs[0], ax=ax)
 
     ax.set_xticks(range(M))
@@ -60,15 +60,18 @@ def createHeatMap(M, N, values):
     ax.margins(x=0, y=0)
     ax.set_aspect('equal', 'box')  # square cells
     plt.tight_layout()
-    plt.show()
+    plt.savefig(filePath)
+    plt.clf()
 
-M, N = 5, 4  # e.g. 5 columns, 4 rows
-values = create_demo_data(M, N)
-print(values[0])
-print('########################')
-print(values[1])
-print('########################')
-print(values[2])
-print('########################')
-print(values[3])
-createHeatMap(M, N, values)
+def test():
+
+    M, N = 5, 4  # e.g. 5 columns, 4 rows
+    values = create_demo_data(M, N)
+    print(values[0])
+    print('########################')
+    print(values[1])
+    print('########################')
+    print(values[2])
+    print('########################')
+    print(values[3])
+    createHeatMap(M, N, values, 'test.png')
