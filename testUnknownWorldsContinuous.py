@@ -21,7 +21,7 @@ class testParameter_UnknownWorld:
         self.maxExpectedReward = maxExpectedReward
         self.maxNumTries = maxNumTries
         self.radius = radius
-        self.numEpisodes = 1000
+        self.numEpisodes = 10
 
 def getDataset():
     worldOptions = {
@@ -66,7 +66,7 @@ def runUnknownWorldTest(testParameter_UnknownWorld):
         testParameter_UnknownWorld.discount,
         testParameter_UnknownWorld.maxExpectedReward,
         testParameter_UnknownWorld.maxNumTries,
-        -0.01,
+        0,
         testParameter_UnknownWorld.radius
     )
 
@@ -103,11 +103,18 @@ def runUnknownWorldTest(testParameter_UnknownWorld):
     avgRewardPerEpisode_SARSA_Epsilon_50Percent = runAgent(SARSA_Epsilon_50Percent, world, testParameter_UnknownWorld.numEpisodes)
     avgRewardPerEpisode_SARSA_Epsilon_75Percent = runAgent(SARSA_Epsilon_75Percent, world, testParameter_UnknownWorld.numEpisodes)
 
-    fileName = getFileName(testParameter_UnknownWorld)
-    generateHeatMap(QLearnAgent, world.height, world.width, fileName)
-    generateHeatMap(SARSA_Epsilon_25Percent, world.height, world.width, fileName)
-    generateHeatMap(SARSA_Epsilon_50Percent, world.height, world.width, fileName)
-    generateHeatMap(SARSA_Epsilon_75Percent, world.height, world.width, fileName)
+    generateHeatMap(QLearnAgent, world.height, world.width, 
+        getFileName(testParameter_UnknownWorld, QLearnAgent.epsilon)
+    )
+    generateHeatMap(SARSA_Epsilon_25Percent, world.height, world.width, 
+        getFileName(testParameter_UnknownWorld, 0.25)       
+    )
+    generateHeatMap(SARSA_Epsilon_50Percent, world.height, world.width, 
+        getFileName(testParameter_UnknownWorld, 0.50)       
+    )
+    generateHeatMap(SARSA_Epsilon_75Percent, world.height, world.width, 
+        getFileName(testParameter_UnknownWorld, 0.75)       
+    )
 
     plotAvgRewardPerEpisode_QLearn(
         testParameter_UnknownWorld, 
@@ -128,9 +135,14 @@ def runAgent(agent, world, numEpisodes):
             state, r = world.act(state, action)
             action = agent.learn(state, r)
             allRewards.append(r)
-            print()
+            
         avgRewardPerEpisode.append(sum(allRewards) / len(allRewards))
-
+        rewardLog = '{0}:{1}-{2}'.format(
+            str(episode+1),
+            str(agent.learnType),
+            str(sum(allRewards) / len(allRewards))
+        )
+        print(rewardLog)
     return avgRewardPerEpisode
 
 def plotAvgRewardPerEpisode_QLearn(
@@ -141,7 +153,7 @@ def plotAvgRewardPerEpisode_QLearn(
         avgRewardPerEpisode_SARSA_Epsilon_75Percent
     ):
 
-    fileName = getFileName(testParameter_UnknownWorld)
+    fileName = getFileName(testParameter_UnknownWorld, '0')
     filePath = './results/WorldUnknown/{0}.png'.format(fileName)
 
     plt.xlim(0, len(avgRewardPerEpisode_Qlearn))
@@ -209,13 +221,14 @@ def generateHeatMap(agent, row, column, fileName):
     )
     createHeatMap(column+1, row+1, [dataNorth, dataEast, dataSouth, dataWest], filePath)
 
-def getFileName(testParameter_UnknownWorld):
-    return '{0}-discount_{1}-maxExpectedReward_{2}-maxNumTries_{3}-radius_{4}'.format(
+def getFileName(testParameter_UnknownWorld, epsilon):
+    return '{0}-ε_{1}-discount_{2}-maxExpectedReward_{3}-maxNumTries_{4}-radius_{5}'.format(
         str(testParameter_UnknownWorld.worldName),
+        str(epsilon),
         str(testParameter_UnknownWorld.discount),
         str(testParameter_UnknownWorld.maxExpectedReward),
         str(testParameter_UnknownWorld.maxNumTries),
-        str(testParameter_UnknownWorld.radius)
+        str(testParameter_UnknownWorld.radius),
     )
 
 def testUnknownWorldsQLearnContinuous():
