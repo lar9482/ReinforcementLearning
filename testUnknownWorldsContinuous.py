@@ -25,9 +25,9 @@ class testParameter_UnknownWorld:
 
 def getDataset():
     worldOptions = {
-        'world1': getWorld1Continuous(),
-        'world2': getWorld2Continuous(),
-        'world3': getWorld3Continuous(),
+        'world1Cont': getWorld1Continuous(),
+        'world2Cont': getWorld2Continuous(),
+        'world3Cont': getWorld3Continuous(),
     }
     discountOptions = [0.01, 0.1, 0.5, 0.9]
     maxExpectedRewardOptions = [1, 2.5, 5]
@@ -35,9 +35,9 @@ def getDataset():
     radiusOptions = [1, 1.5, 3]
 
     dataset = {
-        'world1': [],
-        'world2': [],
-        'world3': [],
+        'world1Cont': [],
+        'world2Cont': [],
+        'world3Cont': [],
     }
     for worldName in list(worldOptions.keys()):
         world = worldOptions[worldName]
