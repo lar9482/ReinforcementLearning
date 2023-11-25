@@ -15,7 +15,13 @@ class testParameter_PolicyIteration:
         self.discount = discount
         self.error = error
         self.k = k
-        
+
+def getValueIterationDataset():
+    pass
+
+def getPolicyIterationDataset():
+    pass
+
 def testKnownWorlds():
 
     gridWorld = getNavigationProblem()
