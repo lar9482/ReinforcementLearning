@@ -31,7 +31,7 @@ def getDiscreteDataset():
     discountOptions = [0.1, 0.5, 0.9]
     maxExpectedRewardOptions = [1, 2.5, 5]
     maxNumTriesOptions = [10, 50, 100]
-    episodeOptions = [100, 1000, 5000]
+    episodeOptions = [100, 500]
     dataset = {
         'world1Dis': [],
         'world2Dis': [],
@@ -135,7 +135,7 @@ def runAgent(agent, world, numEpisodes):
         action = random.choice(list(world.actions))
         totalRuns = 0
         allRewards = []
-        while (not world.is_terminal(state) and totalRuns < 10000):
+        while (not world.is_terminal(state) and totalRuns < 500):
             state, r = world.act(state, action)
             action = agent.learn(state, r)
             allRewards.append(r)
@@ -151,10 +151,10 @@ def runAgent(agent, world, numEpisodes):
 
 def generateHeatMap(agent, row, column, fileName):
     
-    dataNorth = np.zeros((row+1, column+1), dtype=float)
-    dataEast = np.zeros((row+1, column+1), dtype=float)
-    dataSouth = np.zeros((row+1, column+1), dtype=float)
-    dataWest = np.zeros((row+1, column+1), dtype=float)
+    dataNorth = np.zeros((row, column), dtype=float)
+    dataEast = np.zeros((row, column), dtype=float)
+    dataSouth = np.zeros((row, column), dtype=float)
+    dataWest = np.zeros((row, column), dtype=float)
 
     for x in range(column):
         for y in range(row):
@@ -180,7 +180,7 @@ def generateHeatMap(agent, row, column, fileName):
         str(agent.learnType),
         fileName
     )
-    createHeatMap(column+1, row+1, [dataSouth, dataEast, dataNorth, dataWest], filePath)
+    createHeatMap(column, row, [dataSouth, dataEast, dataNorth, dataWest], filePath)
 
 def plotAvgRewardPerEpisode_QLearn(
         testParameter_UnknownWorld, 

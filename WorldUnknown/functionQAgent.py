@@ -87,15 +87,15 @@ class functionQAgent(QAgent):
             reward + 
             (self.discount * self.calculateQValue(state, actionPrime)) -
             (self.calculateQValue(self.prevState, self.prevAction))
-        ), -1, 1)
+        ), -5, 5)
 
         hashedPrevState = hashState(self.prevState)
         prevStateX = hashedPrevState[0]
         prevStateY = hashedPrevState[1]
 
-        self.theta1 = np.clip(self.theta1 + sample, -1, 1)
-        self.theta2 = np.clip(self.theta2 + (sample * prevStateX), -1, 1)
-        self.theta3 = np.clip(self.theta3 + (sample * prevStateY), -1, 1)
+        self.theta1 = np.clip(self.theta1 + sample, -5, 5)
+        self.theta2 = np.clip(self.theta2 + (sample * prevStateX), -5, 5)
+        self.theta3 = np.clip(self.theta3 + (sample * prevStateY), -5, 5)
     
     def __argMaxExploit(self, currState):
         possibleActions = self.mdpSimulator.actions_at(currState)
