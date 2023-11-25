@@ -230,7 +230,7 @@ def generateHeatMap(agent, row, column, fileName):
         str(agent.learnType),
         fileName
     )
-    createHeatMap(column+1, row+1, [dataNorth, dataEast, dataSouth, dataWest], filePath)
+    createHeatMap(column+1, row+1, [dataSouth, dataEast, dataNorth, dataWest], filePath)
 
 def saveMeanStdOfAvgRewardPerEpisode(
         testParameter_UnknownWorld,
