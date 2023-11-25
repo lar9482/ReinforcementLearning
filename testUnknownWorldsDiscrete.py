@@ -11,17 +11,18 @@ from heatmap import createHeatMap
 import random
 import numpy as np
 import matplotlib.pyplot as plt
+import openpyxl
 
-class testParameter_KnownWorld:
+class testParameter_KnownWorldDis:
     def __init__(self, worldName, world, discount, maxExpectedReward, maxNumTries):
         self.worldName = worldName
         self.world = world
         self.discount = discount
         self.maxExpectedReward = maxExpectedReward
         self.maxNumTries = maxNumTries
-        self.numEpisodes = 1000
+        self.numEpisodes = 5000
 
-def getDataset():
+def getDiscreteDataset():
     worldOptions = {
         'world1Dis': getWorld1Discrete(),
         'world2Dis': getWorld2Discrete(),
@@ -29,7 +30,7 @@ def getDataset():
     }
     discountOptions = [0.01, 0.1, 0.5, 0.9]
     maxExpectedRewardOptions = [1, 2.5, 5]
-    maxNumTriesOptions = [10, 50]
+    maxNumTriesOptions = [10, 50, 100]
 
     dataset = {
         'world1Dis': [],
@@ -41,7 +42,7 @@ def getDataset():
         for discount in discountOptions:
             for maxExpectedReward in maxExpectedRewardOptions:
                 for maxNumTries in maxNumTriesOptions:
-                    parameter = testParameter_KnownWorld(
+                    parameter = testParameter_KnownWorldDis(
                         worldName,
                         world,
                         discount,
@@ -53,7 +54,7 @@ def getDataset():
     
     return dataset
 
-def runKnownWorldTest(testParameter_UnknownWorld):
+def runUnKnownWorldTest_Discrete(testParameter_UnknownWorld, lock):
     world = testParameter_UnknownWorld.world
     QLearnAgent = tableQAgent(
         world,
@@ -114,6 +115,16 @@ def runKnownWorldTest(testParameter_UnknownWorld):
         avgRewardPerEpisode_SARSA_Epsilon_50Percent,
         avgRewardPerEpisode_SARSA_Epsilon_75Percent
     )
+    
+    lock.acquire()
+    saveMeanStdOfAvgRewardPerEpisode(
+        testParameter_UnknownWorld,
+        avgRewardPerEpisode_Qlearn,
+        avgRewardPerEpisode_SARSA_Epsilon_25Percent,
+        avgRewardPerEpisode_SARSA_Epsilon_50Percent,
+        avgRewardPerEpisode_SARSA_Epsilon_75Percent     
+    )
+    lock.release()
 
 def runAgent(agent, world, numEpisodes):
     avgRewardPerEpisode = []
@@ -143,20 +154,20 @@ def generateHeatMap(agent, row, column, fileName):
     dataSouth = np.zeros((row+1, column+1), dtype=float)
     dataWest = np.zeros((row+1, column+1), dtype=float)
 
-    for x in range(column+1):
-        for y in range(row+1):
+    for x in range(column):
+        for y in range(row):
             # agent.Q[(hashState(state), action)]
             dataNorth[y][x] = agent.Q[
-                hashState(GridState(x, y, column, row)), Actions.UP
+                hashState(GridState(x+1, y+1, column, row)), Actions.UP
             ]
             dataEast[y][x] = agent.Q[
-                hashState(GridState(x, y, column, row)), Actions.RIGHT
+                hashState(GridState(x+1, y+1, column, row)), Actions.RIGHT
             ]
             dataSouth[y][x] = agent.Q[
-                hashState(GridState(x, y, column, row)), Actions.DOWN
+                hashState(GridState(x+1, y+1, column, row)), Actions.DOWN
             ]
             dataWest[y][x] = agent.Q[
-                hashState(GridState(x, y, column, row)), Actions.LEFT
+                hashState(GridState(x+1, y+1, column, row)), Actions.LEFT
             ]
     
     dataNorth = (dataNorth - np.min(dataNorth)) / (np.max(dataNorth) - np.min(dataNorth))
@@ -213,12 +224,56 @@ def plotAvgRewardPerEpisode_QLearn(
     plt.savefig(filePath)
     plt.clf()
 
+def saveMeanStdOfAvgRewardPerEpisode(
+        testParameter_UnknownWorld,
+        avgRewardPerEpisode_Qlearn,
+        avgRewardPerEpisode_SARSA_Epsilon_25Percent,
+        avgRewardPerEpisode_SARSA_Epsilon_50Percent,
+        avgRewardPerEpisode_SARSA_Epsilon_75Percent     
+    ):
+
+    meanQLearn = sum(avgRewardPerEpisode_Qlearn) / len(avgRewardPerEpisode_Qlearn)
+    varianceQLearn = sum([((x - meanQLearn) ** 2) for x in avgRewardPerEpisode_Qlearn]) / len(avgRewardPerEpisode_Qlearn)
+    stdQLearn = varianceQLearn  ** 0.5
+
+    meanSARSA25 = sum(avgRewardPerEpisode_SARSA_Epsilon_25Percent) / len(avgRewardPerEpisode_SARSA_Epsilon_25Percent)
+    varianceSARSA25 = sum([((x - meanSARSA25) ** 2) for x in avgRewardPerEpisode_SARSA_Epsilon_25Percent]) / len(avgRewardPerEpisode_SARSA_Epsilon_25Percent)
+    stdSARSA25 = meanSARSA25 ** 0.5
+
+    meanSARSA50 = sum(avgRewardPerEpisode_SARSA_Epsilon_50Percent) / len(avgRewardPerEpisode_SARSA_Epsilon_50Percent)
+    varianceSARSA50 = sum([((x - meanSARSA50) ** 2) for x in avgRewardPerEpisode_SARSA_Epsilon_50Percent]) / len(avgRewardPerEpisode_SARSA_Epsilon_50Percent)
+    stdSARSA50 = meanSARSA50 ** 0.5
+
+    meanSARSA75 = sum(avgRewardPerEpisode_SARSA_Epsilon_75Percent) / len(avgRewardPerEpisode_SARSA_Epsilon_75Percent)
+    varianceSARSA75 = sum([((x - meanSARSA75) ** 2) for x in avgRewardPerEpisode_SARSA_Epsilon_75Percent]) / len(avgRewardPerEpisode_SARSA_Epsilon_75Percent)
+    stdSARSA75 = meanSARSA75 ** 0.5
+
+    statWorkbook = openpyxl.load_workbook('./results/WorldUnknown/MeansAndSTDDisc.xlsx')
+    statSheet = statWorkbook.active
+    
+    statSheet.append([
+        testParameter_UnknownWorld.worldName,
+        testParameter_UnknownWorld.discount,
+        testParameter_UnknownWorld.maxExpectedReward,
+        testParameter_UnknownWorld.maxNumTries,
+        "{:.3f}".format(meanQLearn),
+        "{:.3f}".format(stdQLearn),
+        "{:.3f}".format(meanSARSA25),
+        "{:.3f}".format(stdSARSA25),
+        "{:.3f}".format(meanSARSA50),
+        "{:.3f}".format(stdSARSA50),
+        "{:.3f}".format(meanSARSA75),
+        "{:.3f}".format(stdSARSA75)
+    ])
+
+    statWorkbook.save('./results/WorldUnknown/MeansAndSTDDisc.xlsx')
+    statWorkbook.close()
+
 def getFileName(testParameter_UnknownWorld, epsilon):
-    return '{0}-ε_{1}-discount_{2}-maxExpectedReward_{3}-maxNumTries_{4}-radius_{5}'.format(
+    return '{0}-ε_{1}-discount_{2}-maxExpectedReward_{3}-maxNumTries_{4}'.format(
         str(testParameter_UnknownWorld.worldName),
         str(epsilon),
         str(testParameter_UnknownWorld.discount),
         str(testParameter_UnknownWorld.maxExpectedReward),
-        str(testParameter_UnknownWorld.maxNumTries),
-        str(testParameter_UnknownWorld.radius),
+        str(testParameter_UnknownWorld.maxNumTries)
     )

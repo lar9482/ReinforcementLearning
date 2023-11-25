@@ -63,15 +63,15 @@ class functionQAgent(QAgent):
             reward + 
             (self.discount * maxDiscountedQValue) -
             (self.calculateQValue(self.prevState, self.prevAction))
-        ), -self.maxExpectedReward, self.maxExpectedReward)
+        ), -1, 1)
         
         hashedPrevState = hashState(self.prevState)
         prevStateX = hashedPrevState[0]
         prevStateY = hashedPrevState[1]
 
-        self.theta1 = np.clip(self.theta1 + sample, -self.maxExpectedReward, self.maxExpectedReward)
-        self.theta2 = np.clip(self.theta2 + (sample * prevStateX), -self.maxExpectedReward, self.maxExpectedReward)
-        self.theta3 = np.clip(self.theta3 + (sample * prevStateY), -self.maxExpectedReward, self.maxExpectedReward)
+        self.theta1 = np.clip(self.theta1 + sample, -1, 1)
+        self.theta2 = np.clip(self.theta2 + (sample * prevStateX), -1, 1)
+        self.theta3 = np.clip(self.theta3 + (sample * prevStateY), -1, 1)
 
     def SARSA(self, state, reward):
         alpha = self.learningRate(
