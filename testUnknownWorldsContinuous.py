@@ -30,10 +30,10 @@ def getContinuousDataset():
         'world2Cont': getWorld2Continuous(),
         'world3Cont': getWorld3Continuous(),
     }
-    discountOptions = [0.01, 0.1, 0.5, 0.9]
+    discountOptions = [0.1, 0.5, 0.9]
     maxExpectedRewardOptions = [1, 2.5, 5]
     maxNumTriesOptions = [10, 50, 100]
-    radiusOptions = [1, 1.5, 3]
+    radiusOptions = [1, 2.5, 5]
 
     dataset = {
         'world1Cont': [],
@@ -246,15 +246,15 @@ def saveMeanStdOfAvgRewardPerEpisode(
 
     meanSARSA25 = sum(avgRewardPerEpisode_SARSA_Epsilon_25Percent) / len(avgRewardPerEpisode_SARSA_Epsilon_25Percent)
     varianceSARSA25 = sum([((x - meanSARSA25) ** 2) for x in avgRewardPerEpisode_SARSA_Epsilon_25Percent]) / len(avgRewardPerEpisode_SARSA_Epsilon_25Percent)
-    stdSARSA25 = meanSARSA25 ** 0.5
+    stdSARSA25 = varianceSARSA25 ** 0.5
 
     meanSARSA50 = sum(avgRewardPerEpisode_SARSA_Epsilon_50Percent) / len(avgRewardPerEpisode_SARSA_Epsilon_50Percent)
     varianceSARSA50 = sum([((x - meanSARSA50) ** 2) for x in avgRewardPerEpisode_SARSA_Epsilon_50Percent]) / len(avgRewardPerEpisode_SARSA_Epsilon_50Percent)
-    stdSARSA50 = meanSARSA50 ** 0.5
+    stdSARSA50 = varianceSARSA50 ** 0.5
 
     meanSARSA75 = sum(avgRewardPerEpisode_SARSA_Epsilon_75Percent) / len(avgRewardPerEpisode_SARSA_Epsilon_75Percent)
     varianceSARSA75 = sum([((x - meanSARSA75) ** 2) for x in avgRewardPerEpisode_SARSA_Epsilon_75Percent]) / len(avgRewardPerEpisode_SARSA_Epsilon_75Percent)
-    stdSARSA75 = meanSARSA75 ** 0.5
+    stdSARSA75 = varianceSARSA75 ** 0.5
 
     statWorkbook = openpyxl.load_workbook('./results/WorldUnknown/MeansAndSTDCont.xlsx')
     statSheet = statWorkbook.active
