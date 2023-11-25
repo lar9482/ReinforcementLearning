@@ -22,7 +22,7 @@ class testParameter_UnknownWorldCont:
         self.maxExpectedReward = maxExpectedReward
         self.maxNumTries = maxNumTries
         self.radius = radius
-        self.numEpisodes = 5000
+        self.numEpisodes = 500
 
 def getContinuousDataset():
     worldOptions = {
@@ -142,7 +142,7 @@ def runAgent(agent, world, numEpisodes):
         action = random.choice(list(world.actions))
         totalRuns = 0
         allRewards = []
-        while (not world.is_terminal(state) and totalRuns < 10000):
+        while (not world.is_terminal(state) and totalRuns < 500):
             state, r = world.act(state, action)
             action = agent.learn(state, r)
             allRewards.append(r)
@@ -202,13 +202,13 @@ def plotAvgRewardPerEpisode_QLearn(
 
 def generateHeatMap(agent, row, column, fileName):
     
-    dataNorth = np.zeros((row+1, column+1), dtype=float)
-    dataEast = np.zeros((row+1, column+1), dtype=float)
-    dataSouth = np.zeros((row+1, column+1), dtype=float)
-    dataWest = np.zeros((row+1, column+1), dtype=float)
+    dataNorth = np.zeros((row, column), dtype=float)
+    dataEast = np.zeros((row, column), dtype=float)
+    dataSouth = np.zeros((row, column), dtype=float)
+    dataWest = np.zeros((row, column), dtype=float)
 
-    for x in range(column+1):
-        for y in range(row+1):
+    for x in range(column):
+        for y in range(row):
             dataNorth[y][x] = agent.calculateQValue(
                 np.array([y, x]), Actions.UP
             )
@@ -230,7 +230,7 @@ def generateHeatMap(agent, row, column, fileName):
         str(agent.learnType),
         fileName
     )
-    createHeatMap(column+1, row+1, [dataSouth, dataEast, dataNorth, dataWest], filePath)
+    createHeatMap(column, row, [dataSouth, dataEast, dataNorth, dataWest], filePath)
 
 def saveMeanStdOfAvgRewardPerEpisode(
         testParameter_UnknownWorld,
