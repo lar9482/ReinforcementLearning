@@ -14,13 +14,13 @@ import matplotlib.pyplot as plt
 import openpyxl
 
 class testParameter_KnownWorldDis:
-    def __init__(self, worldName, world, discount, maxExpectedReward, maxNumTries):
+    def __init__(self, worldName, world, discount, maxExpectedReward, maxNumTries, numEpisodes):
         self.worldName = worldName
         self.world = world
         self.discount = discount
         self.maxExpectedReward = maxExpectedReward
         self.maxNumTries = maxNumTries
-        self.numEpisodes = 5000
+        self.numEpisodes = numEpisodes
 
 def getDiscreteDataset():
     worldOptions = {
@@ -28,10 +28,10 @@ def getDiscreteDataset():
         'world2Dis': getWorld2Discrete(),
         'world3Dis': getWorld3Discrete(),
     }
-    discountOptions = [0.01, 0.1, 0.5, 0.9]
+    discountOptions = [0.1, 0.5, 0.9]
     maxExpectedRewardOptions = [1, 2.5, 5]
     maxNumTriesOptions = [10, 50, 100]
-
+    episodeOptions = [100, 1000, 5000]
     dataset = {
         'world1Dis': [],
         'world2Dis': [],
@@ -42,15 +42,17 @@ def getDiscreteDataset():
         for discount in discountOptions:
             for maxExpectedReward in maxExpectedRewardOptions:
                 for maxNumTries in maxNumTriesOptions:
-                    parameter = testParameter_KnownWorldDis(
-                        worldName,
-                        world,
-                        discount,
-                        maxExpectedReward,
-                        maxNumTries
-                    )
+                    for episode in episodeOptions:
+                        parameter = testParameter_KnownWorldDis(
+                            worldName,
+                            world,
+                            discount,
+                            maxExpectedReward,
+                            maxNumTries,
+                            episode
+                        )
 
-                    dataset[worldName].append(parameter)
+                        dataset[worldName].append(parameter)
     
     return dataset
 
@@ -238,15 +240,15 @@ def saveMeanStdOfAvgRewardPerEpisode(
 
     meanSARSA25 = sum(avgRewardPerEpisode_SARSA_Epsilon_25Percent) / len(avgRewardPerEpisode_SARSA_Epsilon_25Percent)
     varianceSARSA25 = sum([((x - meanSARSA25) ** 2) for x in avgRewardPerEpisode_SARSA_Epsilon_25Percent]) / len(avgRewardPerEpisode_SARSA_Epsilon_25Percent)
-    stdSARSA25 = meanSARSA25 ** 0.5
+    stdSARSA25 = varianceSARSA25 ** 0.5
 
     meanSARSA50 = sum(avgRewardPerEpisode_SARSA_Epsilon_50Percent) / len(avgRewardPerEpisode_SARSA_Epsilon_50Percent)
     varianceSARSA50 = sum([((x - meanSARSA50) ** 2) for x in avgRewardPerEpisode_SARSA_Epsilon_50Percent]) / len(avgRewardPerEpisode_SARSA_Epsilon_50Percent)
-    stdSARSA50 = meanSARSA50 ** 0.5
+    stdSARSA50 = varianceSARSA50 ** 0.5
 
     meanSARSA75 = sum(avgRewardPerEpisode_SARSA_Epsilon_75Percent) / len(avgRewardPerEpisode_SARSA_Epsilon_75Percent)
     varianceSARSA75 = sum([((x - meanSARSA75) ** 2) for x in avgRewardPerEpisode_SARSA_Epsilon_75Percent]) / len(avgRewardPerEpisode_SARSA_Epsilon_75Percent)
-    stdSARSA75 = meanSARSA75 ** 0.5
+    stdSARSA75 = varianceSARSA75 ** 0.5
 
     statWorkbook = openpyxl.load_workbook('./results/WorldUnknown/MeansAndSTDDisc.xlsx')
     statSheet = statWorkbook.active
@@ -256,6 +258,7 @@ def saveMeanStdOfAvgRewardPerEpisode(
         testParameter_UnknownWorld.discount,
         testParameter_UnknownWorld.maxExpectedReward,
         testParameter_UnknownWorld.maxNumTries,
+        testParameter_UnknownWorld.numEpisodes,
         "{:.3f}".format(meanQLearn),
         "{:.3f}".format(stdQLearn),
         "{:.3f}".format(meanSARSA25),
@@ -270,10 +273,11 @@ def saveMeanStdOfAvgRewardPerEpisode(
     statWorkbook.close()
 
 def getFileName(testParameter_UnknownWorld, epsilon):
-    return '{0}-ε_{1}-discount_{2}-maxExpectedReward_{3}-maxNumTries_{4}'.format(
+    return '{0}-ε_{1}-discount_{2}-maxExpectedReward_{3}-maxNumTries_{4}_episode_{5}'.format(
         str(testParameter_UnknownWorld.worldName),
         str(epsilon),
         str(testParameter_UnknownWorld.discount),
         str(testParameter_UnknownWorld.maxExpectedReward),
-        str(testParameter_UnknownWorld.maxNumTries)
+        str(testParameter_UnknownWorld.maxNumTries),
+        str(testParameter_UnknownWorld.numEpisodes)
     )
