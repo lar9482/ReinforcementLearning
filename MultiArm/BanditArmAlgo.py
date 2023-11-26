@@ -3,10 +3,13 @@ from MultiArm.bandit_sim import Bandit_Sim
 import sys
 
 class BanditArmAlgo:
+    """
+        The bandit algorithm will keep track of the actual reward means
+    """
     def __init__(self, numArms, payoutSTD):
         self.banditSim = Bandit_Sim(numArms, payoutSTD)
         self.numArms = numArms
-        self.rewardMeansPerArm = {arm: 0 for arm in range(0, self.numArms)}
+        self.actualRewardMeansPerArm = {arm: 0 for arm in range(0, self.numArms)}
         self.numPullsPerArm = {arm: 0 for arm in range(0, self.numArms)}
 
     def pullAllArms(self):
@@ -24,7 +27,7 @@ class BanditArmAlgo:
         
         return V
 
-    def expectedRegret(self, arm):
+    def getExpectedRegret(self, arm):
         maxRewardMean = -sys.maxsize
         for possibleArm in list(range(self.numArms)):
             maxRewardMean = max(maxRewardMean, self.rewardMeansPerArm[possibleArm])
