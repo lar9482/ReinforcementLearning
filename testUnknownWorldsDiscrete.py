@@ -139,6 +139,7 @@ def runAgent(agent, world, numEpisodes):
             state, r = world.act(state, action)
             action = agent.learn(state, r)
             allRewards.append(r)
+            totalRuns += 1
             
         avgRewardPerEpisode.append(sum(allRewards) / len(allRewards))
         rewardLog = '{0}:{1}-{2}'.format(

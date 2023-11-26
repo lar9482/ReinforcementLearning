@@ -22,11 +22,16 @@ class testParameter_UnknownWorldCont:
         self.maxExpectedReward = maxExpectedReward
         self.maxNumTries = maxNumTries
         self.radius = radius
-        self.numEpisodes = 500
+        self.numEpisodes = 100
 
 def getContinuousDataset():
+    # worldOptions = {
+    #     'world1Cont': getWorld1Continuous(),
+    #     'world2Cont': getWorld2Continuous(),
+    #     'world3Cont': getWorld3Continuous(),
+    # }
+
     worldOptions = {
-        'world1Cont': getWorld1Continuous(),
         'world2Cont': getWorld2Continuous(),
         'world3Cont': getWorld3Continuous(),
     }
@@ -35,8 +40,13 @@ def getContinuousDataset():
     maxNumTriesOptions = [10, 50, 100]
     radiusOptions = [1, 2.5, 5]
 
+    # dataset = {
+    #     'world1Cont': [],
+    #     'world2Cont': [],
+    #     'world3Cont': [],
+    # }
+
     dataset = {
-        'world1Cont': [],
         'world2Cont': [],
         'world3Cont': [],
     }
@@ -146,6 +156,7 @@ def runAgent(agent, world, numEpisodes):
             state, r = world.act(state, action)
             action = agent.learn(state, r)
             allRewards.append(r)
+            totalRuns += 1
             
         avgRewardPerEpisode.append(sum(allRewards) / len(allRewards))
         rewardLog = '{0}:{1}-{2}'.format(
