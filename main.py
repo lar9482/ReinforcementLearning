@@ -61,7 +61,7 @@ def testUnknownWorlds_Continuous():
                 process.join()
     
 def main():
-    testKnownWorlds()
+    # testKnownWorlds()
 
     # testUnknownWorldsQLearnDiscrete()
     # testUnknownWorldsSARSADiscrete()
@@ -69,7 +69,7 @@ def main():
     # testUnknownWorldsSARSAContinuous()
 
     # testUnknownWorlds_Discrete()
-    # testUnknownWorlds_Continuous()
+    testUnknownWorlds_Continuous()
 
     # testMultiArm()
     
