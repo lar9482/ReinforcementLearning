@@ -15,8 +15,8 @@ class UCB(BanditArmAlgo):
             reward = self.banditSim.pull_arm(selectedArm)
 
             cumulativeReward += reward
-            self.rewardMeansPerArm[selectedArm] = (
-                (self.numPullsPerArm[selectedArm] * self.rewardMeansPerArm[selectedArm] + reward) /
+            self.actualRewardMeansPerArm[selectedArm] = (
+                (self.numPullsPerArm[selectedArm] * self.actualRewardMeansPerArm[selectedArm] + reward) /
                 (self.numPullsPerArm[selectedArm] + 1)
             )
             self.numPullsPerArm[selectedArm] += 1
@@ -29,7 +29,7 @@ class UCB(BanditArmAlgo):
 
         for arm in range(0, self.numArms):
             currRewardMean = (
-                self.rewardMeansPerArm[arm] + 
+                self.actualRewardMeansPerArm[arm] + 
                 math.sqrt(
                     (2 * math.log(n)) /
                     (self.numPullsPerArm[arm]) 

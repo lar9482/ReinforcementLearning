@@ -22,8 +22,8 @@ class EGreedy(BanditArmAlgo):
             reward = self.banditSim.pull_arm(selectedArm)
 
             cumulativeReward += reward
-            self.rewardMeansPerArm[selectedArm] = (
-                (self.numPullsPerArm[selectedArm] * self.rewardMeansPerArm[selectedArm] + reward) /
+            self.actualRewardMeansPerArm[selectedArm] = (
+                (self.numPullsPerArm[selectedArm] * self.actualRewardMeansPerArm[selectedArm] + reward) /
                 (self.numPullsPerArm[selectedArm] + 1)
             )
             self.numPullsPerArm[selectedArm] += 1
@@ -35,8 +35,8 @@ class EGreedy(BanditArmAlgo):
         argMaxArm = -1
 
         for arm in list(range(self.numArms)):
-            if self.rewardMeansPerArm[arm] > maxRewardMean:
-                maxRewardMean = self.rewardMeansPerArm[arm]
+            if self.actualRewardMeansPerArm[arm] > maxRewardMean:
+                maxRewardMean = self.actualRewardMeansPerArm[arm]
                 argMaxArm = arm
         
         return argMaxArm
