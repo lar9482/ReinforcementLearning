@@ -66,9 +66,9 @@ def main():
     # testUnknownWorldsSARSADiscrete()
     # testUnknownWorldsQLearnContinuous()
     # testUnknownWorldsSARSAContinuous()
-    testUnknownWorlds_Discrete()
-    testUnknownWorlds_Continuous()
-    # testMultiArm()
+    # testUnknownWorlds_Discrete()
+    # testUnknownWorlds_Continuous()
+    testMultiArm()
     
 if __name__ == '__main__':
     main()

@@ -1,41 +1,27 @@
-from MultiArm.bandit_sim import Bandit_Sim
+from MultiArm.BanditArmAlgo import BanditArmAlgo
 
 import math
 import sys
 
-class UCB:
+class UCB(BanditArmAlgo):
     def __init__(self, numArms, payoutSTD):
-        self.banditSim = Bandit_Sim(numArms, payoutSTD)
-        self.numArms = numArms
-        self.rewardMeansPerArm = {arm: 0 for arm in range(0, self.numArms)}
-        self.numPullsPerArm = {arm: 0 for arm in range(0, self.numArms)}
+        super().__init__(numArms, payoutSTD) 
 
     def runAlgorithm(self, numSamples):
-        V = 0
-
-        # Trying all arms before the repeat loop.
-        for arm in range(0, self.numArms):
-            reward = self.banditSim.pull_arm(arm)
-
-            V += reward
-            self.rewardMeansPerArm[arm] = (
-                (self.numPullsPerArm[arm] * self.rewardMeansPerArm[arm] + reward) /
-                (self.numPullsPerArm[arm] + 1)
-            )
-            self.numPullsPerArm[arm] += 1
+        cumulativeReward = self.pullAllArms()
         
-        for n in range(1, numSamples+1):
+        for n in range(1, numSamples):
             selectedArm = self.argMaxArm(n)
             reward = self.banditSim.pull_arm(selectedArm)
 
-            V += reward
+            cumulativeReward += reward
             self.rewardMeansPerArm[selectedArm] = (
                 (self.numPullsPerArm[selectedArm] * self.rewardMeansPerArm[selectedArm] + reward) /
                 (self.numPullsPerArm[selectedArm] + 1)
             )
             self.numPullsPerArm[selectedArm] += 1
             
-        return V
+        return cumulativeReward
 
     def argMaxArm(self, n):
         maxRewardMean = -sys.maxsize
