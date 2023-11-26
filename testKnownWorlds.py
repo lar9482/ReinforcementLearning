@@ -266,26 +266,22 @@ def getFileNameWumpus(testParameter_KnownWorlds, k, hasGold, hasImmunity):
 
 def testKnownWorlds():
     dataset = getKnownWorldDataset()
-    for worldName in list(dataset.keys()):
-        parameterList = dataset[worldName]
+    with Manager() as manager:
+        allProcesses = []
+        lock = manager.Lock()
 
-        with Manager() as manager:
-            allProcesses = []
-            lock = manager.Lock()
-
-            for parameter in parameterList:
-
-                process = Process(
-                    target=runKnownWorldTest, 
-                    args=(
-                        parameter,
-                        lock
-                    )
+        for parameter in dataset:
+            process = Process(
+                target=runKnownWorldTest, 
+                args=(
+                    parameter,
+                    lock
                 )
-                allProcesses.append(process)
+            )
+            allProcesses.append(process)
             
-            for process in allProcesses:
-                process.start()
+        for process in allProcesses:
+            process.start()
 
-            for process in allProcesses:
-                process.join()
+        for process in allProcesses:
+            process.join()
