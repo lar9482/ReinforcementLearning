@@ -69,9 +69,9 @@ def main():
     # testUnknownWorldsSARSAContinuous()
 
     # testUnknownWorlds_Discrete()
-    testUnknownWorlds_Continuous()
+    # testUnknownWorlds_Continuous()
 
-    # testMultiArm()
+    testMultiArm()
     
 if __name__ == '__main__':
     main()

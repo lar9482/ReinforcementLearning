@@ -78,6 +78,10 @@ class tableQAgent(QAgent):
         )
 
     def __argMaxExploit(self, currState):
+        """
+            Getting the best action a based on
+            argmax_a QTable(currState, a)
+        """
         possibleActions = self.mdpSimulator.actions_at(currState)
         argmaxActions = []
         maxQValue = -sys.maxsize
@@ -93,6 +97,9 @@ class tableQAgent(QAgent):
         return random.choice(argmaxActions)
     
     def __argMaxExplore(self, currState):
+        """
+            Getting the best action a based on the explore function
+        """
         possibleActions = self.mdpSimulator.actions_at(currState)
         argmaxActions = []
         maxExploreValue = -sys.maxsize

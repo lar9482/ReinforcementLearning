@@ -11,7 +11,7 @@ class UCB(BanditArmAlgo):
         cumulativeReward = self.pullAllArms()
         
         for n in range(1, numSamples):
-            selectedArm = self.argMaxArm(n)
+            selectedArm = self.__argMaxArm(n)
             reward = self.banditSim.pull_arm(selectedArm)
 
             cumulativeReward += reward
@@ -23,7 +23,7 @@ class UCB(BanditArmAlgo):
             
         return cumulativeReward
 
-    def argMaxArm(self, n):
+    def __argMaxArm(self, n):
         maxRewardMean = -sys.maxsize
         argMaxArm = 0
 

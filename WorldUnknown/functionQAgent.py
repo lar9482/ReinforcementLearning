@@ -29,8 +29,10 @@ class functionQAgent(QAgent):
         self.maxExpectedReward = maxExpectedReward
         self.maxNumTries = maxNumTries
         self.epsilon = epsilon
-        self.radius = radius
 
+
+        # Parameters unique to the function Q agent
+        self.radius = radius
         self.theta1 = random.uniform(-1, 1)
         self.theta2 = random.uniform(-1, 1)
         self.theta3 = random.uniform(-1, 1)
@@ -98,6 +100,10 @@ class functionQAgent(QAgent):
         self.theta3 = np.clip(self.theta3 + (sample * prevStateY), -5, 5)
     
     def __argMaxExploit(self, currState):
+        """
+            Getting the best action a based on
+            argmax_a QValue(currState, a)
+        """
         possibleActions = self.mdpSimulator.actions_at(currState)
         argmaxActions = []
         maxQValue = -sys.maxsize
@@ -113,6 +119,9 @@ class functionQAgent(QAgent):
         return random.choice(argmaxActions)
 
     def __argMaxExplore(self, currState):
+        """
+            Getting the best action a based on the explore function
+        """
         possibleActions = self.mdpSimulator.actions_at(currState)
         maxExploreValue = -sys.maxsize
 
@@ -134,6 +143,10 @@ class functionQAgent(QAgent):
         return random.choice(selectedActions)
 
     def calculateQValue(self, state, action):
+        """
+            Calculating the utility based on 
+            U = theta1 + X*theta1 + Y*theta2
+        """
         nextState, _ = self.mdpSimulator.act(state, action)
         hashedNextState = hashState(nextState)
 
@@ -147,6 +160,9 @@ class functionQAgent(QAgent):
         )
     
     def __incrementNTable(self):
+        """
+            Making an increment based on the closest location within the radius.
+        """
         (closestXY, seenActions) = self.__getClosestLocationWithActions(self.prevState)
 
         # Case where no close location has been seen yet.
@@ -180,6 +196,9 @@ class functionQAgent(QAgent):
         )]
 
     def __lookUpNTable(self, state, action):
+        """
+            Making a lookup based on the closest location within the radius.
+        """
         (closestXY, seenActions) = self.__getClosestLocationWithActions(state)
 
         # Case where no close location has been seen yet.
@@ -207,6 +226,10 @@ class functionQAgent(QAgent):
         )]
 
     def __getClosestLocationWithActions(self, state):
+        """
+            Try to find the closest location in the N Table.
+            as long as it's within radius.
+        """
         hashedState = hashState(state)
 
         X = hashedState[0]
