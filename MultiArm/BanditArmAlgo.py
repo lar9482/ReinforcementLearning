@@ -27,12 +27,22 @@ class BanditArmAlgo:
         
         return V
 
-    def getExpectedRegret(self, arm):
-        maxRewardMean = -sys.maxsize
-        for possibleArm in list(range(self.numArms)):
-            maxRewardMean = max(maxRewardMean, self.rewardMeansPerArm[possibleArm])
-        
-        return maxRewardMean - self.rewardMeansPerArm[arm]
+    def getExpectedRewardMean(self, arm):
+        return self.banditSim.arm_means[arm]
     
+    def getActualRewardMean(self, arm):
+        return self.actualRewardMeansPerArm[arm]
+    
+    def getExpectedRegret(self, arm):
+        rewardStar = max(self.banditSim.arm_means)
+        return rewardStar - self.banditSim.arm_means[arm]
+
+    def getActualRegret(self, arm):
+        rewardStar = -sys.maxsize
+        for armPrime in range(0, self.numArms):
+            rewardStar = max(rewardStar, self.actualRewardMeansPerArm[armPrime])
+        
+        return rewardStar - self.actualRewardMeansPerArm[arm]
+
     def runAlgorithm(self, numSamples):
         pass

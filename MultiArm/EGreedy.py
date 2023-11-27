@@ -17,7 +17,7 @@ class EGreedy(BanditArmAlgo):
             if (chance < self.epsilon):
                 selectedArm = random.choice(list(range(self.numArms)))
             else:
-                selectedArm = self.argMaxArm()
+                selectedArm = self.__argMaxArm()
             
             reward = self.banditSim.pull_arm(selectedArm)
 
@@ -30,7 +30,7 @@ class EGreedy(BanditArmAlgo):
 
         return cumulativeReward
     
-    def argMaxArm(self):
+    def __argMaxArm(self):
         maxRewardMean = -sys.maxsize
         argMaxArm = -1
 
