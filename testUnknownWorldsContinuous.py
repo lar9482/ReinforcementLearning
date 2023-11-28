@@ -24,39 +24,40 @@ class testParameter_UnknownWorldCont:
         self.maxExpectedReward = maxExpectedReward
         self.maxNumTries = maxNumTries
         self.radius = radius
-        self.numEpisodes = 200
+        self.numEpisodes = 250
 
 def getContinuousDataset():
-    # worldOptions = {
-    #     'world1Cont': getWorld1Continuous(),
-    #     'world2Cont': getWorld2Continuous(),
-    #     'world3Cont': getWorld3Continuous(),
-    # }
-
     worldOptions = {
+        'world1Cont': getWorld1Continuous(),
         'world2Cont': getWorld2Continuous(),
         'world3Cont': getWorld3Continuous(),
     }
+
+    # worldOptions = {
+    #     'world2Cont': getWorld2Continuous(),
+    #     'world3Cont': getWorld3Continuous(),
+    # }
     discountOptions = [0.1, 0.5, 0.9]
     maxExpectedRewardOptions = [1, 2.5, 5]
     maxNumTriesOptions = [10, 50, 100]
     radiusOptions = [1, 2.5, 5]
 
-    # discountOptions = [0.1]
-    # maxExpectedRewardOptions = [1]
-    # maxNumTriesOptions = [10]
-    # radiusOptions = [1]
-
-    # dataset = {
-    #     'world1Cont': [],
-    #     'world2Cont': [],
-    #     'world3Cont': [],
-    # }
+    # world2Cont to compute still
+    # discountOptions = [0.9]
+    # maxExpectedRewardOptions = [1, 2.5, 5]
+    # maxNumTriesOptions = [10, 50, 100]
+    # radiusOptions = [1, 2.5, 5]
 
     dataset = {
+        'world1Cont': [],
         'world2Cont': [],
         'world3Cont': [],
     }
+
+    # dataset = {
+    #     'world2Cont': [],
+    #     'world3Cont': [],
+    # }
     for worldName in list(worldOptions.keys()):
         world = worldOptions[worldName]
         for discount in discountOptions:
