@@ -33,9 +33,9 @@ class functionQAgent(QAgent):
 
         # Parameters unique to the function Q agent
         self.radius = radius
-        self.theta1 = random.uniform(-1, 1)
-        self.theta2 = random.uniform(-1, 1)
-        self.theta3 = random.uniform(-1, 1)
+        self.theta1 = random.uniform(-10, 10)
+        self.theta2 = random.uniform(-10, 10)
+        self.theta3 = random.uniform(-10, 10)
     
     def learn(self, currState, currReward):
         if (self.prevState is not None):
@@ -65,15 +65,15 @@ class functionQAgent(QAgent):
             reward + 
             (self.discount * maxDiscountedQValue) -
             (self.calculateQValue(self.prevState, self.prevAction))
-        ), -1, 1)
+        ), -10, 10)
         
         hashedPrevState = hashState(self.prevState)
         prevStateX = hashedPrevState[0]
         prevStateY = hashedPrevState[1]
 
-        self.theta1 = np.clip(self.theta1 + sample, -1, 1)
-        self.theta2 = np.clip(self.theta2 + (sample * prevStateX), -1, 1)
-        self.theta3 = np.clip(self.theta3 + (sample * prevStateY), -1, 1)
+        self.theta1 = np.clip(self.theta1 + sample, -10, 10)
+        self.theta2 = np.clip(self.theta2 + (sample * prevStateX), -10, 10)
+        self.theta3 = np.clip(self.theta3 + (sample * prevStateY), -10, 10)
 
     def SARSA(self, state, reward):
         alpha = self.learningRate(
@@ -89,15 +89,15 @@ class functionQAgent(QAgent):
             reward + 
             (self.discount * self.calculateQValue(state, actionPrime)) -
             (self.calculateQValue(self.prevState, self.prevAction))
-        ), -5, 5)
+        ), -10, 10)
 
         hashedPrevState = hashState(self.prevState)
         prevStateX = hashedPrevState[0]
         prevStateY = hashedPrevState[1]
 
-        self.theta1 = np.clip(self.theta1 + sample, -5, 5)
-        self.theta2 = np.clip(self.theta2 + (sample * prevStateX), -5, 5)
-        self.theta3 = np.clip(self.theta3 + (sample * prevStateY), -5, 5)
+        self.theta1 = np.clip(self.theta1 + sample, -10, 10)
+        self.theta2 = np.clip(self.theta2 + (sample * prevStateX), -10, 10)
+        self.theta3 = np.clip(self.theta3 + (sample * prevStateY), -10, 10)
     
     def __argMaxExploit(self, currState):
         """
