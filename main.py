@@ -78,7 +78,7 @@ def main():
 
     # testMultiArm()
     testUnknownWorlds_Continuous()
-    testKnownWorlds()
+    # testKnownWorlds()
 
 if __name__ == '__main__':
     main()
