@@ -14,6 +14,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import openpyxl
 
+from multiprocessing import Process, Manager
+
 class testParameter_UnknownWorldCont:
     def __init__(self, worldName, world, discount, maxExpectedReward, maxNumTries, radius):
         self.worldName = worldName
@@ -22,7 +24,7 @@ class testParameter_UnknownWorldCont:
         self.maxExpectedReward = maxExpectedReward
         self.maxNumTries = maxNumTries
         self.radius = radius
-        self.numEpisodes = 100
+        self.numEpisodes = 200
 
 def getContinuousDataset():
     # worldOptions = {
@@ -39,6 +41,11 @@ def getContinuousDataset():
     maxExpectedRewardOptions = [1, 2.5, 5]
     maxNumTriesOptions = [10, 50, 100]
     radiusOptions = [1, 2.5, 5]
+
+    # discountOptions = [0.1]
+    # maxExpectedRewardOptions = [1]
+    # maxNumTriesOptions = [10]
+    # radiusOptions = [1]
 
     # dataset = {
     #     'world1Cont': [],
@@ -69,7 +76,7 @@ def getContinuousDataset():
     
     return dataset
 
-def runUnknownWorldTest_Continuous(testParameter_UnknownWorld, lock):
+def runUnknownWorldTest_Continuous(testParameter_UnknownWorld, unknownWorldTestLock):
     world = testParameter_UnknownWorld.world
     QLearnAgent = functionQAgent(
         world,
@@ -109,10 +116,52 @@ def runUnknownWorldTest_Continuous(testParameter_UnknownWorld, lock):
         testParameter_UnknownWorld.radius
     )
 
-    avgRewardPerEpisode_Qlearn = runAgent(QLearnAgent, world, testParameter_UnknownWorld.numEpisodes)
-    avgRewardPerEpisode_SARSA_Epsilon_25Percent = runAgent(SARSA_Epsilon_25Percent, world, testParameter_UnknownWorld.numEpisodes)
-    avgRewardPerEpisode_SARSA_Epsilon_50Percent = runAgent(SARSA_Epsilon_50Percent, world, testParameter_UnknownWorld.numEpisodes)
-    avgRewardPerEpisode_SARSA_Epsilon_75Percent = runAgent(SARSA_Epsilon_75Percent, world, testParameter_UnknownWorld.numEpisodes)
+    runAgentDict = {}
+    with Manager() as manager:
+        allProcesses = []
+        runAgentLock = manager.Lock()
+        runAgentDictProxy = manager.dict()
+        allProcesses.append(Process(
+            target=runAgent, 
+            args=(
+                QLearnAgent, world, testParameter_UnknownWorld.numEpisodes,
+                'QLearnAgent', runAgentLock, runAgentDictProxy
+            )
+        ))
+        allProcesses.append(Process(
+            target=runAgent, 
+            args=(
+                SARSA_Epsilon_25Percent, world, testParameter_UnknownWorld.numEpisodes,
+                'SARSA_Epsilon_25Percent', runAgentLock, runAgentDictProxy
+            )
+        ))
+        allProcesses.append(Process(
+            target=runAgent, 
+            args=(
+                SARSA_Epsilon_50Percent, world, testParameter_UnknownWorld.numEpisodes,
+                'SARSA_Epsilon_50Percent', runAgentLock, runAgentDictProxy
+            )
+        ))
+        allProcesses.append(Process(
+            target=runAgent, 
+            args=(
+                SARSA_Epsilon_75Percent, world, testParameter_UnknownWorld.numEpisodes,
+                'SARSA_Epsilon_75Percent', runAgentLock, runAgentDictProxy
+            )
+        ))
+            
+        for process in allProcesses:
+            process.start()
+
+        for process in allProcesses:
+            process.join()
+
+        runAgentDict = dict(runAgentDictProxy)
+    
+    avgRewardPerEpisode_Qlearn = runAgentDict['QLearnAgent']
+    avgRewardPerEpisode_SARSA_Epsilon_25Percent = runAgentDict['SARSA_Epsilon_25Percent']
+    avgRewardPerEpisode_SARSA_Epsilon_50Percent = runAgentDict['SARSA_Epsilon_50Percent']
+    avgRewardPerEpisode_SARSA_Epsilon_75Percent = runAgentDict['SARSA_Epsilon_75Percent']
 
     generateHeatMap(QLearnAgent, world.height, world.width, 
         getFileName(testParameter_UnknownWorld, QLearnAgent.epsilon)
@@ -135,7 +184,7 @@ def runUnknownWorldTest_Continuous(testParameter_UnknownWorld, lock):
         avgRewardPerEpisode_SARSA_Epsilon_75Percent
     )
 
-    lock.acquire()
+    unknownWorldTestLock.acquire()
     saveMeanStdOfAvgRewardPerEpisode(
         testParameter_UnknownWorld,
         avgRewardPerEpisode_Qlearn,
@@ -143,9 +192,9 @@ def runUnknownWorldTest_Continuous(testParameter_UnknownWorld, lock):
         avgRewardPerEpisode_SARSA_Epsilon_50Percent,
         avgRewardPerEpisode_SARSA_Epsilon_75Percent     
     )
-    lock.release()
+    unknownWorldTestLock.release()
 
-def runAgent(agent, world, numEpisodes):
+def runAgent(agent, world, numEpisodes, runAgentName, runAgentLock, runAgentDict):
     avgRewardPerEpisode = []
     for episode in range(0, numEpisodes):
         state = world.initial_state
@@ -165,7 +214,10 @@ def runAgent(agent, world, numEpisodes):
             str(sum(allRewards) / len(allRewards))
         )
         print(rewardLog)
-    return avgRewardPerEpisode
+    
+    runAgentLock.acquire()
+    runAgentDict[runAgentName] = avgRewardPerEpisode
+    runAgentLock.release()
 
 def plotAvgRewardPerEpisode_QLearn(
         testParameter_UnknownWorld, 

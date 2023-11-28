@@ -18,8 +18,12 @@ class testParameter_KnownWorlds:
         self.error = error
 
 def getKnownWorldDataset():
+    # worldOptions = {
+    #     'navigation': getNavigationProblem(),
+    #     'wumpus': getWumpusWorld()
+    # }
+
     worldOptions = {
-        'navigation': getNavigationProblem(),
         'wumpus': getWumpusWorld()
     }
 

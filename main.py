@@ -36,29 +36,34 @@ def testUnknownWorlds_Discrete():
 
 def testUnknownWorlds_Continuous():
     dataset = getContinuousDataset()
+    numParametersInPool = 15
+    parameterList = []
     for worldName in list(dataset.keys()):
-        parameterList = dataset[worldName]
+        for parameter in dataset[worldName]:
+            parameterList.append(parameter)
+    
+    parameterPool = [
+        parameterList[i:i+numParametersInPool] 
+        for i in range(0, len(parameterList), numParametersInPool)
+    ]
 
+    for pool in parameterPool:
         with Manager() as manager:
             allProcesses = []
             lock = manager.Lock()
 
-            for parameter in parameterList:
-
-                process = Process(
-                    target=runUnknownWorldTest_Continuous, 
-                    args=(
-                        parameter,
-                        lock
-                    )
-                )
-                allProcesses.append(process)
+            for parameter in pool:
+                allProcesses.append(Process(
+                    target=runUnknownWorldTest_Continuous,
+                    args=(parameter, lock)
+                ))
             
             for process in allProcesses:
                 process.start()
-
+            
             for process in allProcesses:
                 process.join()
+    
     
 def main():
     # testKnownWorlds()
@@ -71,7 +76,9 @@ def main():
     # testUnknownWorlds_Discrete()
     # testUnknownWorlds_Continuous()
 
-    testMultiArm()
-    
+    # testMultiArm()
+    testUnknownWorlds_Continuous()
+    testKnownWorlds()
+
 if __name__ == '__main__':
     main()
