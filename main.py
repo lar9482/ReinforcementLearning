@@ -36,7 +36,7 @@ def testUnknownWorlds_Discrete():
 
 def testUnknownWorlds_Continuous():
     dataset = getContinuousDataset()
-    numParametersInPool = 15
+    numParametersInPool = 18
     parameterList = []
     for worldName in list(dataset.keys()):
         for parameter in dataset[worldName]:
