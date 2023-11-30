@@ -34,9 +34,9 @@ def getContinuousDataset():
     # }
 
     worldOptions = {
-        'world3Cont': getWorld3Continuous(),
+        'world2Cont': getWorld2Continuous(),
     }
-    discountOptions = [0.1, 0.5, 0.9]
+    discountOptions = [0.9]
     maxExpectedRewardOptions = [1, 2.5, 5]
     maxNumTriesOptions = [10, 50, 100]
     radiusOptions = [1, 2.5, 5]
@@ -54,7 +54,7 @@ def getContinuousDataset():
     # }
 
     dataset = {
-        'world3Cont': [],
+        'world2Cont': [],
     }
     for worldName in list(worldOptions.keys()):
         world = worldOptions[worldName]
