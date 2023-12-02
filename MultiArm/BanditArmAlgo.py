@@ -19,8 +19,8 @@ class BanditArmAlgo:
             reward = self.banditSim.pull_arm(arm)
 
             V += reward
-            self.rewardMeansPerArm[arm] = (
-                (self.numPullsPerArm[arm] * self.rewardMeansPerArm[arm] + reward) /
+            self.actualRewardMeansPerArm[arm] = (
+                (self.numPullsPerArm[arm] * self.actualRewardMeansPerArm[arm] + reward) /
                 (self.numPullsPerArm[arm] + 1)
             )
             self.numPullsPerArm[arm] += 1
