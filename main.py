@@ -76,10 +76,7 @@ def main():
     # testUnknownWorlds_Discrete()
     # testUnknownWorlds_Continuous()
 
-    # testMultiArm()
-    testUnknownWorlds_Continuous()
-    testKnownWorlds()
-    # testKnownWorlds()
+    testMultiArm()
 
 if __name__ == '__main__':
     main()
