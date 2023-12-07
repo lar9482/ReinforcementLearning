@@ -66,7 +66,7 @@ def saveAvgDiffBetween_ExpectedAndActual(
     expectedRewardsPerM,
     actualRewardsPerM
 ):
-    fileName = './results/MultiArm/DiffAccuracy_actions-{0}.xlsx'.format(str(numActions))
+    fileName = './results/MultiArm/DecisionAccuracy/DiffAccuracy_actions-{0}.xlsx'.format(str(numActions))
     if not os.path.exists(fileName):
         workbook = Workbook()
 
@@ -124,7 +124,7 @@ def plotExpectedAndActualRewardMeans(
     plt.ylabel('Reward Mean')
     plt.legend(loc=(0.9, 0))
 
-    fileName = './results/MultiArm/DecisionAccuracy_actions-{0}_STD-{1}.png'.format(
+    fileName = './results/MultiArm/DecisionAccuracy/DecisionAccuracy_actions-{0}_STD-{1}.png'.format(
         str(DecisionAccuracyParameter.numActions),
         str(DecisionAccuracyParameter.payoutSTD)
     )
