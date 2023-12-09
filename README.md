@@ -1,4 +1,4 @@
-# 4 project from CS 5313-01
+# 3rd project from CS 5313-01
 
 Advanced Artificial Intelligence
 
