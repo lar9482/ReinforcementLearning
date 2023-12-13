@@ -27,35 +27,23 @@ class testParameter_UnknownWorldCont:
         self.numEpisodes = 250
 
 def getContinuousDataset():
-    # worldOptions = {
-    #     'world1Cont': getWorld1Continuous(),
-    #     'world2Cont': getWorld2Continuous(),
-    #     'world3Cont': getWorld3Continuous(),
-    # }
-
     worldOptions = {
+        'world1Cont': getWorld1Continuous(),
         'world2Cont': getWorld2Continuous(),
+        'world3Cont': getWorld3Continuous(),
     }
-    discountOptions = [0.9]
+
+    discountOptions = [0.01, 0.1, 0.5, 0.9]
     maxExpectedRewardOptions = [1, 2.5, 5]
     maxNumTriesOptions = [10, 50, 100]
     radiusOptions = [1, 2.5, 5]
 
-    # world2Cont to compute still
-    # discountOptions = [0.9]
-    # maxExpectedRewardOptions = [1, 2.5, 5]
-    # maxNumTriesOptions = [10, 50, 100]
-    # radiusOptions = [1, 2.5, 5]
-
-    # dataset = {
-    #     'world1Cont': [],
-    #     'world2Cont': [],
-    #     'world3Cont': [],
-    # }
-
     dataset = {
+        'world1Cont': [],
         'world2Cont': [],
+        'world3Cont': [],
     }
+
     for worldName in list(worldOptions.keys()):
         world = worldOptions[worldName]
         for discount in discountOptions:
