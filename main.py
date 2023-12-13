@@ -1,12 +1,33 @@
-from testKnownWorlds import testKnownWorlds
-from testMultiArm import testMultiArm
-
+from testKnownWorlds import runKnownWorldTest, getKnownWorldDataset
 from testUnknownWorldsContinuous import runUnknownWorldTest_Continuous, getContinuousDataset
 from testUnknownWorldsDiscrete import runUnKnownWorldTest_Discrete, getDiscreteDataset
-from WorldUnknown.domains.world3 import getWorld3Continuous
-from WorldUnknown.domains.world1 import getWorld1Continuous, getWorld1Discrete
+from testMultiArm import testMultiArm
 
 from multiprocessing import Process, Manager
+
+import sys
+
+def testKnownWorlds():
+    dataset = getKnownWorldDataset()
+    with Manager() as manager:
+        allProcesses = []
+        lock = manager.Lock()
+
+        for parameter in dataset:
+            process = Process(
+                target=runKnownWorldTest, 
+                args=(
+                    parameter,
+                    lock
+                )
+            )
+            allProcesses.append(process)
+            
+        for process in allProcesses:
+            process.start()
+
+        for process in allProcesses:
+            process.join()
 
 def testUnknownWorlds_Discrete():
     dataset = getDiscreteDataset()
@@ -42,6 +63,8 @@ def testUnknownWorlds_Continuous():
         for parameter in dataset[worldName]:
             parameterList.append(parameter)
     
+    # Dividing all parameters into sub-pools of size 
+    # 'numParametersInPool' or less
     parameterPool = [
         parameterList[i:i+numParametersInPool] 
         for i in range(0, len(parameterList), numParametersInPool)
@@ -64,19 +87,19 @@ def testUnknownWorlds_Continuous():
             for process in allProcesses:
                 process.join()
     
-    
 def main():
-    # testKnownWorlds()
+    args = sys.argv
+    if (args.__contains__('-known')):
+        testKnownWorlds()
+    
+    if (args.__contains__('-unknownDis')):
+        testUnknownWorlds_Discrete()
+    
+    if (args.__contains__('-unknownCont')):
+        testUnknownWorlds_Continuous()
 
-    # testUnknownWorldsQLearnDiscrete()
-    # testUnknownWorldsSARSADiscrete()
-    # testUnknownWorldsQLearnContinuous()
-    # testUnknownWorldsSARSAContinuous()
-
-    # testUnknownWorlds_Discrete()
-    # testUnknownWorlds_Continuous()
-
-    testMultiArm()
+    if (args.__contains__('-bandit')):
+        testMultiArm()
 
 if __name__ == '__main__':
     main()

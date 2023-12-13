@@ -8,8 +8,6 @@ import seaborn as sns
 import matplotlib.pyplot as plt 
 import openpyxl
 
-from multiprocessing import Process, Manager
-
 class testParameter_KnownWorlds:
     def __init__(self, worldName, world, discount, error):
         self.worldName = worldName
@@ -18,15 +16,11 @@ class testParameter_KnownWorlds:
         self.error = error
 
 def getKnownWorldDataset():
-    # worldOptions = {
-    #     'navigation': getNavigationProblem(),
-    #     'wumpus': getWumpusWorld()
-    # }
-
     worldOptions = {
+        'navigation': getNavigationProblem(),
         'wumpus': getWumpusWorld()
     }
-
+    
     discountOptions = [0.01, 0.1, 0.5, 0.9]
     errorOptions = [0.01, 0.1, 0.5, 0.9]
     dataset = []
@@ -267,25 +261,3 @@ def getFileNameWumpus(testParameter_KnownWorlds, k, hasGold, hasImmunity):
         hasGold,
         hasImmunity
     )
-
-def testKnownWorlds():
-    dataset = getKnownWorldDataset()
-    with Manager() as manager:
-        allProcesses = []
-        lock = manager.Lock()
-
-        for parameter in dataset:
-            process = Process(
-                target=runKnownWorldTest, 
-                args=(
-                    parameter,
-                    lock
-                )
-            )
-            allProcesses.append(process)
-            
-        for process in allProcesses:
-            process.start()
-
-        for process in allProcesses:
-            process.join()

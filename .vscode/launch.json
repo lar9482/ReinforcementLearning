@@ -13,7 +13,8 @@
             "justMyCode": true,
             "env": {
                 "PYDEVD_CONTAINER_RANDOM_ACCESS_MAX_ITEMS": "1000000000",
-            }
+            },
+            "args": ["-known", "-unknownDis", "-unknownCont", "-bandit"]
         }
     ]
 }
